@@ -3,7 +3,6 @@ import './App.css';
 import LoginPage from './pages/Login'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { config } from './config/config';
 import AuthRoute from './components/AuthRoute';
 import HomePage from './pages/HomePage';

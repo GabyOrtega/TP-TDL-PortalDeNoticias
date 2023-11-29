@@ -10,11 +10,21 @@
     "@types/node": "^16.18.65",
     "@types/react": "^18.2.39",
     "@types/react-dom": "^18.2.17",
+    "axios": "^1.6.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "firebase": "^10.7.0",
+    "http-proxy-middleware": "^2.0.6",
+    "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "util": "^0.12.5",
+    "web-vitals": "^2.1.4",
+    "xml-js": "^1.6.11",
+    "xml2js": "^0.6.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/xml2js": "^0.4.14"
   }
 }

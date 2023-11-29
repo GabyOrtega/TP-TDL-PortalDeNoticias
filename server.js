@@ -19,7 +19,6 @@ app.get('/clarin-rss', async (req, res) => {
         console.log(error);
     });
   } catch (error) {
-    console.error(error);
     res.status(500).send('Error al obtener los datos de Clarín.');
   }
 });

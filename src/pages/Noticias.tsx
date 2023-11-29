@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { xml2json, json2xml } from 'xml-js';
+import { parseString, Builder } from "xml2js";
 
 type NoticiaResponse = {
     rss: {
@@ -17,6 +17,12 @@ type NoticiaResponse = {
     }
 }
 
+function toJson(xml: string) {
+
+    parseString(xml, { explicitArray: false }, function(error, result) {
+        console.log(result);
+    });
+}
 
 export default function Noticias() {
     const [data, setData] = useState<NoticiaResponse | null>(null);
@@ -25,12 +31,13 @@ export default function Noticias() {
         console.log('previo al fetch');
         axios.get('http://localhost:3001/clarin-rss')
         .then( (response) => {
-            return xml2json(response.data, { compact: true, spaces: 4 });
+            console.log(response.data);
+            toJson(response.data);
             //return xml2js.parseStringPromise(response.data)
-        })
+        })/*
         .then(result => {
             setData(JSON.parse(result) as NoticiaResponse);
-          })
+          })*/
         .catch( (error) => {
             console.log('Fetch error');
             console.log(error);
@@ -42,7 +49,7 @@ export default function Noticias() {
           }); */
       }, []);
       
-    
+    /*
     const renderNews = () => {
     const items = [];
     if (data) {
@@ -57,6 +64,12 @@ export default function Noticias() {
         <div>
         <p>Noticias</p>
         {renderNews()}
+    </div>
+    )*/
+
+    return (
+        <div>
+        <p>Noticias</p>
     </div>
     )
 };

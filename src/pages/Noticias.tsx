@@ -3,10 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { parseString } from "xml2js";
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import { getFirestore } from 'firebase-admin/firestore';
 import {onAuthStateChanged, getAuth} from 'firebase/auth';
-
-const db = getFirestore();
 
 type NoticiaResponse = {
     rss: {
@@ -43,25 +40,23 @@ export default function Noticias() {
         });
     }
     
-    function guardarNoticia(data : NoticiaResponse) {
-        var userId;
-        onAuthStateChanged(getAuth(), (user) => {
+    async function guardarNoticia(data : NoticiaResponse, indice :number) {
+        var userId = '';
+        await onAuthStateChanged(getAuth(), (user) => {
             if (user) {
-                console.log(user.uid);
+                console.log('userid', user.uid);
                 userId = user.uid;
             } else {
               console.log('Usuario no logueado');
             }
           });
-
-        db.collection('usuarios').add({
-            noticias:{
-                titulo: data?.rss.channel.item[0].title,
-                fuente: data?.rss.channel.item[0].link,
-                descripcion: data?.rss.channel.item[0].description,
-                imagen: data?.rss.channel.item[0].enclosure?.$.url
-            },
-            uid: userId,
+        axios.post('http://localhost:3001/noticias', {
+            titulo: data?.rss.channel.item[indice].title,
+            fuente: data?.rss.channel.link,
+            descripcion: data?.rss.channel.item[indice].description,
+            imagen: data?.rss.channel.item[indice].enclosure?.$.url,
+            link: data?.rss.channel.item[indice].link,
+            uid: userId.toString()
         });
     }
     
@@ -71,7 +66,6 @@ export default function Noticias() {
         .then( (response) => {
             console.log(response.data);
             toJson(response.data);
-            //return xml2js.parseStringPromise(response.data)
         })
         .catch( (error) => {
             console.log('Fetch error');
@@ -84,14 +78,6 @@ export default function Noticias() {
     const items = [];
     if (data) {
         for (let i = 0; i < data.rss.channel.item.length; i++) {
-            //items.push(<p key={i}>{data.rss.channel.item[i].title}</p>);
-            /*items.push(
-                    <div key={i}>
-                        <h3>{data.rss.channel.item[i].title}</h3>
-                        <img src={data.rss.channel.item[i].enclosure?.$.url} alt={data.rss.channel.item[i].title} />
-                        <p>{data.rss.channel.item[i].description}</p>
-                        <a href={data.rss.channel.item[i].link}>Ver más</a>
-                    </div>)*/
             items.push(
                     <div style={{width:'100vw', display:'flex', flexDirection:'row', justifyContent:'center'}}>
                         <Card className="text-center" style = {{width: '90%', backgroundColor: '#D3D3D8', margin:'1rem'}}>
@@ -100,7 +86,7 @@ export default function Noticias() {
                             <div dangerouslySetInnerHTML={{ __html: data.rss.channel.item[i].description }} />
                             <img style = {{width: '50%', alignContent: 'center', marginBottom:'1rem'}} src={data.rss.channel.item[i].enclosure?.$.url} alt={data.rss.channel.item[i].title} />
                             <a href={data.rss.channel.item[i].link}><Button variant="primary">Ver más</Button></a>
-                            <Button onClick={() => guardarNoticia(data)}> + Guardar noticia </Button>
+                            <Button onClick={() => guardarNoticia(data,i)}> + Guardar noticia </Button>
                             <Card.Footer className="text-muted">{data.rss.channel.link}</Card.Footer>
                         </section>
                         </Card>
@@ -113,7 +99,6 @@ export default function Noticias() {
 
     return (
         <div>
-        <p>Noticias</p>
         {renderNews()}
     </div>
     )

@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage';
 
 initializeApp(config.firebaseConfig)
 
+
 export interface IApplicationProps {}
 
 const Application: React.FC<IApplicationProps> = (props) => {

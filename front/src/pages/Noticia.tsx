@@ -7,9 +7,10 @@ type NoticiaProps = {
   imageUrl: string;
   link: string;
   onClick: MouseEventHandler<HTMLButtonElement>;
+  buttonName: string;
 };
 
-const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, onClick }) => {
+const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, onClick, buttonName }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -28,7 +29,7 @@ const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, o
         </div>
       </div>
       <a href={link}>Ver más</a>
-      <Button onClick={onClick}>Guardar Noticia</Button>
+      <Button onClick={onClick}>{buttonName}</Button>
     </div>
   );
 };

@@ -105,6 +105,7 @@ export default function Noticias() {
                 imageUrl={data.rss.channel.item[i].enclosure?.$.url}
                 link={data.rss.channel.item[i].link}
                 onClick={() => guardarNoticia(i)}
+                buttonName='Guardar noticia'
               />
             </div>
           </div>

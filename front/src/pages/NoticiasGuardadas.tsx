@@ -39,7 +39,7 @@ export default function NoticiasGuardadas() {
     };
 
     fetchData();
-  }, [borrado]); // Empty dependency array to run the effect only once on mount
+  }, []); // Empty dependency array to run the effect only once on mount
 
   function borrarNoticiaGuardada(id: String){
     axios.get(`http://localhost:3001/borrarNoticiaGuardada?id=${id}`);
@@ -49,15 +49,15 @@ export default function NoticiasGuardadas() {
   const renderNews = () => {
     const items: JSX.Element[] = [];
     if (data) {
-      return data.map((noticia, index) => (
+      data.map((noticia, index) => (
         items.push(
           <div key={index}>
             <div className="column-container">
               <Noticia
                 title={noticia.titulo}
                 description={noticia.descripcion}
-                imageUrl={noticia.link}
-                link={noticia.imagen}
+                imageUrl={noticia.imagen}
+                link={noticia.fuente}
                 onClick={() => borrarNoticiaGuardada(noticia.id)}
               />
             </div>
@@ -67,7 +67,6 @@ export default function NoticiasGuardadas() {
     }
     return items;
   };
-
   return (
     <div>
       {renderNews()}

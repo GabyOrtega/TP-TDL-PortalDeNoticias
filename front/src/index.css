@@ -11,3 +11,30 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.noticia {
+  /* Estilos generales de las noticias */
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  transition: transform 0.2s;
+}
+
+.noticia:hover {
+  /* Estilos adicionales al pasar el mouse sobre la noticia */
+  transform: scale(1.05);
+}
+
+.noticia.focused {
+  /* Estilos cuando la noticia está enfocada */
+  transform: scale(1.1);
+}
+
+.column-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.column-container .noticia {
+  width: 48%; /* Ajusta según tu preferencia para dos columnas */
+}

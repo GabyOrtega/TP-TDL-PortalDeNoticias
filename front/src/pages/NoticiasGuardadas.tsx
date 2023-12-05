@@ -2,6 +2,8 @@ import axios from 'axios';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useState, useEffect } from 'react';
 import { Card, Button } from 'react-bootstrap';
+import Noticia from './Noticia';
+import { JSX } from 'react/jsx-runtime';
 
 type NoticiaGuardadaResponse = {
   titulo: string;
@@ -45,36 +47,25 @@ export default function NoticiasGuardadas() {
 }
 
   const renderNews = () => {
+    const items: JSX.Element[] = [];
     if (data) {
       return data.map((noticia, index) => (
-        <div
-          key={index}
-          style={{
-            width: '100vw',
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}
-        >
-          {
-            <div style={{width:'100vw', display:'flex', flexDirection:'row', justifyContent:'center'}}>
-            <Card className="text-center" style = {{width: '90%', backgroundColor: '#D3D3D8', margin:'1rem'}}>
-            <Card.Header style = {{width: '100%', textAlign:'center', color:'white', fontSize: '30px', fontWeight:'bold', backgroundColor: '#8910C5'}}>{data[index].titulo}</Card.Header>
-            <section style={{width:'100vw', display:'flex', flexDirection: 'column', alignItems:'center', justifyContent:'center'}}>
-                <div dangerouslySetInnerHTML={{ __html: data[index].descripcion }} />
-                <img style = {{width: '50%', alignContent: 'center', marginBottom:'1rem'}} src={data[index].imagen} alt={data[index].titulo} />
-                <a href={data[index].link}><Button variant="primary">Ver más</Button></a>
-                <Button onClick={() => borrarNoticiaGuardada(data[index].id)}>Dejar de guardar</Button>
-                <Card.Footer className="text-muted">{data[index].fuente}</Card.Footer>
-            </section>
-            </Card>
-        </div>
-          }
-        </div>
+        items.push(
+          <div key={index}>
+            <div className="column-container">
+              <Noticia
+                title={noticia.titulo}
+                description={noticia.descripcion}
+                imageUrl={noticia.link}
+                link={noticia.imagen}
+                onClick={() => borrarNoticiaGuardada(noticia.id)}
+              />
+            </div>
+          </div>
+        )
       ));
     }
-
-    return <p>No hay noticias guardadas.</p>;
+    return items;
   };
 
   return (

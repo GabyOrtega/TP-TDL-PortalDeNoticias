@@ -32,9 +32,9 @@ const HomePage: React.FC<IHomePageProps> = (props) => {
         <span role="img" aria-label="Cerrar Sesión">🚪</span>
     </Button>
 </div>
-<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap', width: '100%' }}>
+<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%' }}>
         {/* Noticias más pequeñas y en dos columnas */}
-        <div style={{ width: '48%', marginBottom: '1rem' }}>
+        <div style={{ marginBottom: '1rem', width:'100%'}}>
         {mostrarNoticiasGuardadas ? <NoticiasGuardadas /> : <Noticias />}
         </div>
     </div>

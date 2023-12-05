@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import Noticia from './Noticia';
 import { JSX } from 'react/jsx-runtime';
+import { randomInt } from 'crypto';
 
 type NoticiaGuardadaResponse = {
   titulo: string;
@@ -17,7 +18,7 @@ type NoticiaGuardadaResponse = {
 
 export default function NoticiasGuardadas() {
   const [data, setData] = useState<NoticiaGuardadaResponse[] | null>(null);
-  const [borrado, setBorrado] = useState<number>(0);
+  const [borrado, setBorrado] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +44,7 @@ export default function NoticiasGuardadas() {
 
   function borrarNoticiaGuardada(id: String){
     axios.get(`http://localhost:3001/borrarNoticiaGuardada?id=${id}`);
-    setBorrado(borrado +1);
+    setBorrado(borrado ? false : true);
 }
 
   const renderNews = () => {

@@ -98,7 +98,6 @@ export default function Noticias() {
       for (let i = 0; i < data.rss.channel.item.length; i++) {
         items.push(
           <div key={i}>
-            <div className="column-container">
               <Noticia
                 title={data.rss.channel.item[i].title}
                 description={data.rss.channel.item[i].description}
@@ -108,12 +107,11 @@ export default function Noticias() {
                 buttonName='Guardar noticia'
               />
             </div>
-          </div>
         );
       }
     }
     return items;
   };
 
-  return <div>{renderNews()}</div>;
+  return <div style={{display:"grid", gridTemplateColumns: "repeat(auto-fill, minmax(30%, 1fr))", gap:"1rem"}}>{renderNews()}</div>;
 }

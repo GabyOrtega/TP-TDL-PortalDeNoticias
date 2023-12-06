@@ -17,6 +17,7 @@ type NoticiaGuardadaResponse = {
 
 export default function NoticiasGuardadas() {
   const [data, setData] = useState<NoticiaGuardadaResponse[] | null>(null);
+  const [borrado, setBorrado] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,10 +39,11 @@ export default function NoticiasGuardadas() {
     };
 
     fetchData();
-  }, [ borrarNoticiaGuardada]); // Empty dependency array to run the effect only once on mount
+  }, [borrado]); // Empty dependency array to run the effect only once on mount
 
   function borrarNoticiaGuardada(id: String){
     axios.get(`http://localhost:3001/borrarNoticiaGuardada?id=${id}`);
+    setBorrado(borrado ? false : true);
 }
 
   const renderNews = () => {

@@ -1,10 +1,9 @@
 import axios from 'axios';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useState, useEffect } from 'react';
-import { Card, Button } from 'react-bootstrap';
 import Noticia from './Noticia';
 import { JSX } from 'react/jsx-runtime';
-import { randomInt } from 'crypto';
+import * as Styles from './styles';
 
 type NoticiaGuardadaResponse = {
   titulo: string;
@@ -18,7 +17,6 @@ type NoticiaGuardadaResponse = {
 
 export default function NoticiasGuardadas() {
   const [data, setData] = useState<NoticiaGuardadaResponse[] | null>(null);
-  const [borrado, setBorrado] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,11 +38,10 @@ export default function NoticiasGuardadas() {
     };
 
     fetchData();
-  }, [borrado]); // Empty dependency array to run the effect only once on mount
+  }, [ borrarNoticiaGuardada]); // Empty dependency array to run the effect only once on mount
 
   function borrarNoticiaGuardada(id: String){
     axios.get(`http://localhost:3001/borrarNoticiaGuardada?id=${id}`);
-    setBorrado(borrado ? false : true);
 }
 
   const renderNews = () => {
@@ -53,16 +50,15 @@ export default function NoticiasGuardadas() {
       data.map((noticia, index) => (
         items.push(
           <div key={index}>
-            <div className="column-container">
               <Noticia
                 title={noticia.titulo}
                 description={noticia.descripcion}
                 imageUrl={noticia.imagen}
                 link={noticia.fuente}
-                onClick={() => borrarNoticiaGuardada(noticia.id)}
-                buttonName="Borrar noticia"
+                func={async () => borrarNoticiaGuardada(noticia.id)}
+                buttonName="Eliminar"
+                visible = {true}
               />
-            </div>
           </div>
         )
       ));
@@ -70,8 +66,6 @@ export default function NoticiasGuardadas() {
     return items;
   };
   return (
-    <div>
-      {renderNews()}
-    </div>
+    <Styles.NewsContainer2>{renderNews()}</Styles.NewsContainer2>
   );
 }

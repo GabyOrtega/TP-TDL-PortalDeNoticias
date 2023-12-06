@@ -1,10 +1,9 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { parseString } from 'xml2js';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import Noticia from './Noticia';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
+import * as Styles from './styles';
 
 type NoticiaResponse = {
   rss: {
@@ -98,20 +97,21 @@ export default function Noticias() {
       for (let i = 0; i < data.rss.channel.item.length; i++) {
         items.push(
           <div key={i}>
-              <Noticia
-                title={data.rss.channel.item[i].title}
-                description={data.rss.channel.item[i].description}
-                imageUrl={data.rss.channel.item[i].enclosure?.$.url}
-                link={data.rss.channel.item[i].link}
-                onClick={() => guardarNoticia(i)}
-                buttonName='Guardar noticia'
-              />
-            </div>
+            <Noticia
+              title={data.rss.channel.item[i].title}
+              description={data.rss.channel.item[i].description}
+              imageUrl={data.rss.channel.item[i].enclosure?.$.url}
+              link={data.rss.channel.item[i].link}
+              func={() => guardarNoticia(i)}
+              buttonName='Guardar'
+              visible={true}
+            />
+          </div>
         );
       }
     }
     return items;
   };
 
-  return <div style={{display:"grid", gridTemplateColumns: "repeat(auto-fill, minmax(30%, 1fr))", gap:"1rem"}}>{renderNews()}</div>;
+  return <Styles.NewsContainer2>{renderNews()}</Styles.NewsContainer2>;
 }

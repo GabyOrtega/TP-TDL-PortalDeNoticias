@@ -6,39 +6,25 @@ import Noticia from './Noticia';
 import * as Styles from './styles';
 
 type NoticiaResponse = {
-  rss: {
-    channel: {
-      link: string;
-      item: {
-        title: string;
-        link: string;
-        description: string;
-        pubDate: string;
-        guid: string;
-        category: string;
-        enclosure: {
-          $: {
-            url: string;
-            length: string;
-            type: string;
-          };
-        };
-      }[];
-    };
-  };
+  titulo: string;
+  fuente: string;
+  descripcion: string;
+  imagen: string;
+  link: string;
+  id: string;
 };
 
 export default function Noticias() {
-  const [data, setData] = useState<NoticiaResponse | null>(null);
   const [valorABuscar, setValorABuscar] = useState<string | undefined>('');
+  const [data, setData] = useState<NoticiaResponse[] | null>(null);
   var inputValue : string = '';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/clarin-rss');
+        const response = await axios.get('http://localhost:3001/noticias');
         console.log(response.data);
-        toJson(response.data);
+        setData(response.data);
       } catch (error) {
         console.error('Fetch error:', error);
       }
@@ -48,27 +34,17 @@ export default function Noticias() {
     fetchData();
   }, []);
 
-  const toJson = (xml: string) => {
-    parseString(xml, { explicitArray: false }, (error, result) => {
-      if (error) {
-        console.error('Error parsing XML:', error);
-      } else {
-        console.log(result);
-        setData(result as NoticiaResponse);
-      }
-    });
-  };
-
-  const guardarNoticia = async (indice: number) => {
+  const guardarNoticia = async (indice: string) => {
     try {
       const userId = await getUserId();
-      const newsData = data?.rss.channel.item[indice];
+      const newsData = data?.filter((d) => d.titulo === indice)[0];
+      if(!newsData) return;
       await axios.post('http://localhost:3001/noticias', {
-        titulo: newsData?.title,
-        fuente: data?.rss.channel.link,
-        descripcion: newsData?.description,
-        imagen: newsData?.enclosure?.$.url,
-        link: newsData?.link,
+        titulo: newsData!.titulo,
+        fuente: newsData!.fuente,
+        descripcion: newsData!.descripcion,
+        imagen: newsData!.imagen,
+        link: newsData!.link,
         uid: userId.toString(),
       });
     } catch (error) {
@@ -102,22 +78,22 @@ export default function Noticias() {
   const renderNews = () => {
     const items = [];
     if (data) {
-      for (let i = 0; i < data.rss.channel.item.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         var contieneCadenaEnTitulo = false;
         var contieneCadenaEnDescripcion = false;
         if(valorABuscar != null){
-          if((data.rss.channel.item[i].title != null)) contieneCadenaEnTitulo = (data.rss.channel.item[i].title.toLowerCase()).indexOf(valorABuscar.toLowerCase()) !== -1;
-          if((data.rss.channel.item[i].description != null)) contieneCadenaEnDescripcion = (data.rss.channel.item[i].description).indexOf(valorABuscar) !== -1;
+          if((data[i].titulo != null)) contieneCadenaEnTitulo = (data[i].titulo.toLowerCase()).indexOf(valorABuscar.toLowerCase()) !== -1;
+          if((data[i].descripcion != null)) contieneCadenaEnDescripcion = (data[i].descripcion).indexOf(valorABuscar) !== -1;
         }
         if((valorABuscar == null) || contieneCadenaEnTitulo || contieneCadenaEnDescripcion )
         items.push(
-          <div key={i}>
+          <div key={data[i].titulo}>
             <Noticia
-              title={data.rss.channel.item[i].title}
-              description={data.rss.channel.item[i].description}
-              imageUrl={data.rss.channel.item[i].enclosure?.$.url}
-              link={data.rss.channel.item[i].link}
-              func={() => guardarNoticia(i)}
+              title={data[i].titulo}
+              description={data[i].descripcion}
+              imageUrl={data[i].imagen}
+              link={data[i].link}
+              func={() => guardarNoticia(data[i].titulo)}
               buttonName='Guardar'
               visible={true}
             />

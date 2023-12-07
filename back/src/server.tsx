@@ -3,6 +3,7 @@ import cors from 'cors';
 import axios from 'axios';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { parseString } from 'xml2js';
 import bodyParser from 'body-parser';
 
 const app = express();
@@ -32,6 +33,29 @@ app.get('/clarin-rss', async (req, res) => {
     res.status(500).send('Error al obtener los datos de Clarín.');
   }
 });
+
+app.get('/noticias', async (req, res) => {
+  try {
+    const response = await axios.get('https://www.clarin.com/rss/lo-ultimo/');
+    res.send(parseClarin(response.data));
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Error al obtener los datos de Clarín.');
+  }
+});
+
+const parseClarin = (xml: string) => {
+  const res: NoticiaResponse[] = [];
+  parseString(xml, { explicitArray: false }, (error, result) => {
+    if (error) {
+      console.error('Error parsing XML:', error);
+    } else {
+      console.log(result);
+      res.push(result as NoticiaResponse);
+    }
+  });
+  return res;
+};
 
 app.get('/noticiasGuardadas', async (req, res) => {
   try {

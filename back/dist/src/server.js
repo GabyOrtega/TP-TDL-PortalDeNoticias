@@ -8,6 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const axios_1 = __importDefault(require("axios"));
 const app_1 = require("firebase-admin/app");
 const firestore_1 = require("firebase-admin/firestore");
+const xml2js_1 = require("xml2js");
 const body_parser_1 = __importDefault(require("body-parser"));
 const app = (0, express_1.default)();
 const PORT = 3001;
@@ -33,6 +34,27 @@ app.get('/clarin-rss', async (req, res) => {
         res.status(500).send('Error al obtener los datos de Clarín.');
     }
 });
+app.get('/noticias', async (req, res) => {
+    try {
+        const response = await axios_1.default.get('https://www.clarin.com/rss/lo-ultimo/');
+        console.log(response.data);
+        res.send(response.data);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send('Error al obtener los datos de Clarín.');
+    }
+});
+const toJson = (xml) => {
+    (0, xml2js_1.parseString)(xml, { explicitArray: false }, (error, result) => {
+        if (error) {
+            console.error('Error parsing XML:', error);
+        }
+        else {
+            console.log(result);
+        }
+    });
+};
 app.get('/noticiasGuardadas', async (req, res) => {
     try {
         console.log('REQ', req.query.uid);

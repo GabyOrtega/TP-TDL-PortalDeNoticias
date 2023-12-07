@@ -52,7 +52,7 @@ export default function NoticiasGuardadas() {
     if (data) {
       data.map((noticia, index) => (
           items.push(
-            <div key={index}>
+            <div key={noticia.titulo}>
                 <Noticia
                   title={noticia.titulo}
                   description={noticia.descripcion}

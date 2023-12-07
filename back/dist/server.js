@@ -8,6 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const axios_1 = __importDefault(require("axios"));
 const app_1 = require("firebase-admin/app");
 const firestore_1 = require("firebase-admin/firestore");
+const xml2js_1 = require("xml2js");
 const body_parser_1 = __importDefault(require("body-parser"));
 const app = (0, express_1.default)();
 const PORT = 3001;
@@ -33,6 +34,43 @@ app.get('/clarin-rss', async (req, res) => {
         res.status(500).send('Error al obtener los datos de Clarín.');
     }
 });
+app.get('/noticias', async (req, res) => {
+    try {
+        console.log('como me encanta la pija');
+        const response = await axios_1.default.get('https://www.clarin.com/rss/lo-ultimo/');
+        res.send(parseClarin(response.data));
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send('Error al obtener los datos de Clarín.');
+    }
+});
+const parseClarin = (xml) => {
+    var _a, _b;
+    let res;
+    (0, xml2js_1.parseString)(xml, { explicitArray: false }, (error, result) => {
+        if (error) {
+            console.error('Error parsing XML:', error);
+            throw new Error();
+        }
+        else {
+            console.log(result);
+            res = result;
+        }
+    });
+    const result = [];
+    for (let i = 0; i < res.rss.channel.item.length; i++) {
+        result.push({
+            titulo: res.rss.channel.item[i].title,
+            fuente: (_a = res.rss.channel) === null || _a === void 0 ? void 0 : _a.link,
+            descripcion: res.rss.channel.item[i].description,
+            imagen: (_b = res.rss.channel.item[i].enclosure) === null || _b === void 0 ? void 0 : _b.$.url,
+            link: res.rss.channel.item[i].link,
+            id: res.rss.channel.item[i].title,
+        });
+    }
+    return result;
+};
 app.get('/noticiasGuardadas', async (req, res) => {
     try {
         console.log('REQ', req.query.uid);

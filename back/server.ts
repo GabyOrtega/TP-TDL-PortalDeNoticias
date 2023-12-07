@@ -5,6 +5,7 @@ import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { parseString } from 'xml2js';
 import bodyParser from 'body-parser';
+import {NoticiaGuardadaResponse, NoticiaResponse} from './types/noticia-response';
 
 const app = express();
 const PORT = 3001;
@@ -45,16 +46,28 @@ app.get('/noticias', async (req, res) => {
 });
 
 const parseClarin = (xml: string) => {
-  const res: NoticiaResponse[] = [];
+  let res: NoticiaResponse;
   parseString(xml, { explicitArray: false }, (error, result) => {
     if (error) {
       console.error('Error parsing XML:', error);
+      throw new Error();
     } else {
       console.log(result);
-      res.push(result as NoticiaResponse);
+      res = (result as NoticiaResponse);
     }
   });
-  return res;
+  const result: NoticiaGuardadaResponse[] = [];
+  for (let i = 0; i < res!.rss.channel.item.length; i++) {
+    result.push({
+      titulo: res!.rss.channel.item[i].title,
+      fuente: res!.rss.channel?.link,
+      descripcion: res!.rss.channel.item[i].description,
+      imagen: res!.rss.channel.item[i].enclosure?.$.url,
+      link: res!.rss.channel.item[i].link,
+      id: res!.rss.channel.item[i].title,
+    })
+  }
+  return result
 };
 
 app.get('/noticiasGuardadas', async (req, res) => {

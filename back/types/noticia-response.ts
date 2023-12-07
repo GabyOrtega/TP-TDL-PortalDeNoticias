@@ -1,4 +1,4 @@
-type NoticiaResponse = {
+export type NoticiaResponse = {
     rss: {
         channel: {
             link: string;
@@ -20,3 +20,12 @@ type NoticiaResponse = {
         }
     }
 }
+
+export type NoticiaGuardadaResponse = {
+    titulo: string;
+    fuente: string;
+    descripcion: string;
+    imagen: string;
+    link: string;
+    id: string;
+  };

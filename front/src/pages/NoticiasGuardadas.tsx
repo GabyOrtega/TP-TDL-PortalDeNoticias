@@ -47,23 +47,24 @@ export default function NoticiasGuardadas() {
 }
 
   const renderNews = () => {
-    const items: JSX.Element[] = [];
+      const items: JSX.Element[] = [];
+    
     if (data) {
       data.map((noticia, index) => (
-        items.push(
-          <div key={index}>
-              <Noticia
-                title={noticia.titulo}
-                description={noticia.descripcion}
-                imageUrl={noticia.imagen}
-                link={noticia.fuente}
-                func={async () => borrarNoticiaGuardada(noticia.id)}
-                buttonName="Eliminar"
-                visible = {true}
-              />
-          </div>
-        )
-      ));
+          items.push(
+            <div key={index}>
+                <Noticia
+                  title={noticia.titulo}
+                  description={noticia.descripcion}
+                  imageUrl={noticia.imagen}
+                  link={noticia.fuente}
+                  func={async () => borrarNoticiaGuardada(noticia.id)}
+                  buttonName="Eliminar"
+                  visible = {true}
+                />
+            </div>
+          )
+        ));
     }
     return items;
   };

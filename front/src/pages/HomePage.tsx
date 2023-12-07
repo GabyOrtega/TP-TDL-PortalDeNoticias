@@ -16,6 +16,8 @@ const HomePage: React.FC<IHomePageProps> = (props) => {
     setMostrarNoticiasGuardadas((prevMostrarNoticiasGuardadas) => !prevMostrarNoticiasGuardadas);
   };
 
+
+
   return (
     <Styles.Container>
       <Styles.TitleContainer>
@@ -29,6 +31,7 @@ const HomePage: React.FC<IHomePageProps> = (props) => {
         >
           {mostrarNoticiasGuardadas ? <span role="img">📰 Inicio</span> : <span role="img">📰 Mis Noticias</span>}
         </Styles.ActionButton>
+
 
         <Styles.ActionButton style={{ backgroundColor: '#DC3545', borderColor: '#DC3545' }} onClick={() => signOut(auth)}>
           <span role="img">🚪 Cerrar Sesión</span>

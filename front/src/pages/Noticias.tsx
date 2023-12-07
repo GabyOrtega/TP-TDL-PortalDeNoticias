@@ -30,6 +30,8 @@ type NoticiaResponse = {
 
 export default function Noticias() {
   const [data, setData] = useState<NoticiaResponse | null>(null);
+  const [valorABuscar, setValorABuscar] = useState<string | undefined>('');
+  var inputValue : string = '';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,10 +93,23 @@ export default function Noticias() {
     return userId;
   };
 
+  const inputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+    setValorABuscar(inputValue);
+    console.log('valor', inputValue);
+  };
+
   const renderNews = () => {
     const items = [];
     if (data) {
       for (let i = 0; i < data.rss.channel.item.length; i++) {
+        var contieneCadenaEnTitulo = false;
+        var contieneCadenaEnDescripcion = false;
+        if(valorABuscar != null){
+          if((data.rss.channel.item[i].title != null)) contieneCadenaEnTitulo = (data.rss.channel.item[i].title.toLowerCase()).indexOf(valorABuscar.toLowerCase()) !== -1;
+          if((data.rss.channel.item[i].description != null)) contieneCadenaEnDescripcion = (data.rss.channel.item[i].description).indexOf(valorABuscar) !== -1;
+        }
+        if((valorABuscar == null) || contieneCadenaEnTitulo || contieneCadenaEnDescripcion )
         items.push(
           <div key={i}>
             <Noticia
@@ -113,5 +128,11 @@ export default function Noticias() {
     return items;
   };
 
-  return <Styles.NewsContainer2>{renderNews()}</Styles.NewsContainer2>;
+  return <div>
+            <div>
+              <label htmlFor="miInput">Busca una noticia:</label>
+              <input type="text" id="miInput" value={valorABuscar} onChange={inputChange}/>
+            </div>
+            <Styles.NewsContainer2>{renderNews()}</Styles.NewsContainer2>
+          </div>;
 }

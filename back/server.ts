@@ -53,7 +53,7 @@ app.get('/politica', async (req, res) => {
     const clarin = await parseRss('https://www.clarin.com/rss/politica/');
     const telam = await parseRss('https://www.telam.com.ar/rss2/politica.xml');
     const cronica = await parseRss('https://www.diariocronica.com.ar/rss/politica');
-    res.send(clarin.concat(telam).concat(cronica));
+    res.send(shuffle(clarin.concat(telam).concat(cronica)));
   } catch (error) {
     console.log(error);
     res.status(500).send('Error al obtener los datos de politica.');
@@ -66,7 +66,7 @@ app.get('/deportes', async (req, res) => {
     const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/deportes/notas');
     const telam = await parseRss('https://www.telam.com.ar/rss2/deportes.xml');
     const cronica = await parseRss('https://www.diariocronica.com.ar/rss/deportes');
-    res.send(clarin.concat(p12).concat(telam).concat(cronica));
+    res.send(shuffle(clarin.concat(p12).concat(telam).concat(cronica)));
   } catch (error) {
     console.log(error);
     res.status(500).send('Error al obtener los datos de noticias.');

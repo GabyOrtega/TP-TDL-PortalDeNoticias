@@ -57,7 +57,8 @@ export default function NoticiasGuardadas() {
                   title={noticia.titulo}
                   description={noticia.descripcion}
                   imageUrl={noticia.imagen}
-                  link={noticia.fuente}
+                  link={noticia.link}
+                  font={noticia.fuente}
                   func={async () => borrarNoticiaGuardada(noticia.id)}
                   buttonName="Eliminar"
                   visible = {true}

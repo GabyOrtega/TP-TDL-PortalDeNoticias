@@ -9,10 +9,16 @@ export type NoticiaResponse = {
                 pubDate: string;
                 guid: string;
                 category: string;
-                enclosure: {
+                enclosure?: {
                     $: {
                         url: string;
                         length: string;
+                        type: string;
+                    }
+                };
+                'media:content'?: {
+                    $: {
+                        url: string;
                         type: string;
                     }
                 }

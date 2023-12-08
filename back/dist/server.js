@@ -36,17 +36,45 @@ app.get('/clarin-rss', async (req, res) => {
 });
 app.get('/noticias', async (req, res) => {
     try {
-        console.log('como me encanta la pija');
-        const response = await axios_1.default.get('https://www.clarin.com/rss/lo-ultimo/');
-        res.send(parseClarin(response.data));
+        const clarin = await parseRss('https://www.clarin.com/rss/lo-ultimo/');
+        const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/el-pais/notas');
+        const telam = await parseRss('https://www.telam.com.ar/rss2/ultimasnoticias.xml');
+        const cronica = await parseRss('https://www.diariocronica.com.ar/rss/noticias');
+        res.send(shuffle(clarin.concat(p12).concat(telam).concat(cronica)));
     }
     catch (error) {
         console.log(error);
-        res.status(500).send('Error al obtener los datos de Clarín.');
+        res.status(500).send('Error al obtener los datos de noticias.');
     }
 });
-const parseClarin = (xml) => {
-    var _a, _b;
+app.get('/politica', async (req, res) => {
+    try {
+        const clarin = await parseRss('https://www.clarin.com/rss/politica/');
+        const telam = await parseRss('https://www.telam.com.ar/rss2/politica.xml');
+        const cronica = await parseRss('https://www.diariocronica.com.ar/rss/politica');
+        res.send(shuffle(clarin.concat(telam).concat(cronica)));
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send('Error al obtener los datos de politica.');
+    }
+});
+app.get('/deportes', async (req, res) => {
+    try {
+        const clarin = await parseRss('https://www.clarin.com/rss/deportes/');
+        const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/deportes/notas');
+        const telam = await parseRss('https://www.telam.com.ar/rss2/deportes.xml');
+        const cronica = await parseRss('https://www.diariocronica.com.ar/rss/deportes');
+        res.send(shuffle(clarin.concat(p12).concat(telam).concat(cronica)))
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send('Error al obtener los datos de deportes.');
+    }
+});
+const parseRss = async (url) => {
+    var _a, _b, _c;
+    const xml = (await axios_1.default.get(url)).data;
     let res;
     (0, xml2js_1.parseString)(xml, { explicitArray: false }, (error, result) => {
         if (error) {
@@ -54,7 +82,6 @@ const parseClarin = (xml) => {
             throw new Error();
         }
         else {
-            console.log(result);
             res = result;
         }
     });
@@ -64,7 +91,7 @@ const parseClarin = (xml) => {
             titulo: res.rss.channel.item[i].title,
             fuente: (_a = res.rss.channel) === null || _a === void 0 ? void 0 : _a.link,
             descripcion: res.rss.channel.item[i].description,
-            imagen: (_b = res.rss.channel.item[i].enclosure) === null || _b === void 0 ? void 0 : _b.$.url,
+            imagen: (_c = (_b = res.rss.channel.item[i].enclosure) === null || _b === void 0 ? void 0 : _b.$.url) !== null && _c !== void 0 ? _c : res.rss.channel.item[i]['media:content'].$.url,
             link: res.rss.channel.item[i].link,
             id: res.rss.channel.item[i].title,
         });
@@ -126,6 +153,13 @@ app.get('/borrarNoticiaGuardada', async (req, res) => {
         res.status(500).send('Error al borrar la noticia.');
     }
 });
+const shuffle = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
 app.listen(PORT, () => {
     console.log(`Servidor backend en http://localhost:${PORT}`);
 });

@@ -39,6 +39,8 @@ export const ActionButton = styled.button`
   padding: 8px 16px;
   border-radius: 5px;
   cursor: pointer;
+  background-color: #1DA1F2;
+  color: #ffffff;
 `;
 
 export const NewsContainer = styled.div`
@@ -91,6 +93,7 @@ export const NoticiaText = styled.div`
 export const NoticiaImage = styled.img`
   width: 100%;
   max-width: 600px;
+  height: 300px;
   border-radius: 8px;
 `;
 

@@ -1,10 +1,11 @@
 // HomePage.js
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getAuth, signOut } from 'firebase/auth';
 import Noticias from './Noticias';
 import NoticiasGuardadas from './NoticiasGuardadas';
 import * as Styles from './styles';
+import { Button } from 'react-bootstrap';
 
 export interface IHomePageProps {}
 
@@ -15,8 +16,6 @@ const HomePage: React.FC<IHomePageProps> = (props) => {
   const toggleMostrarNoticiasGuardadas = () => {
     setMostrarNoticiasGuardadas((prevMostrarNoticiasGuardadas) => !prevMostrarNoticiasGuardadas);
   };
-
-
 
   return (
     <Styles.Container>
@@ -32,7 +31,6 @@ const HomePage: React.FC<IHomePageProps> = (props) => {
           {mostrarNoticiasGuardadas ? <span role="img">📰 Inicio</span> : <span role="img">📰 Mis Noticias</span>}
         </Styles.ActionButton>
 
-
         <Styles.ActionButton style={{ backgroundColor: '#DC3545', borderColor: '#DC3545' }} onClick={() => signOut(auth)}>
           <span role="img">🚪 Cerrar Sesión</span>
         </Styles.ActionButton>
@@ -40,7 +38,7 @@ const HomePage: React.FC<IHomePageProps> = (props) => {
 
       <Styles.NewsContainer>
         <div style={{ marginBottom: '1rem', width: '100%' }}>
-          {mostrarNoticiasGuardadas ? <NoticiasGuardadas /> : <Noticias />}
+          {mostrarNoticiasGuardadas ? <NoticiasGuardadas /> : <Noticias/>}
         </div>
       </Styles.NewsContainer>
     </Styles.Container>

@@ -4,6 +4,7 @@ import { parseString } from 'xml2js';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import Noticia from './Noticia';
 import * as Styles from './styles';
+import { Button } from 'react-bootstrap';
 
 type NoticiaResponse = {
   titulo: string;
@@ -14,15 +15,16 @@ type NoticiaResponse = {
   id: string;
 };
 
-export default function Noticias() {
+const Noticias: React.FC = () => {
   const [valorABuscar, setValorABuscar] = useState<string | undefined>('');
   const [data, setData] = useState<NoticiaResponse[] | null>(null);
-  var inputValue : string = '';
+  const [noticeType, setPath] = useState<string>("noticias");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/noticias');
+        setData(null);
+        const response = await axios.get(`http://localhost:3001/${noticeType}`);
         console.log(response.data);
         setData(response.data);
       } catch (error) {
@@ -32,7 +34,7 @@ export default function Noticias() {
 
     console.log('Antes del fetch');
     fetchData();
-  }, []);
+  }, [noticeType]);
 
   const guardarNoticia = async (indice: string) => {
     try {
@@ -70,9 +72,7 @@ export default function Noticias() {
   };
 
   const inputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = event.target.value;
-    setValorABuscar(inputValue);
-    console.log('valor', inputValue);
+    setValorABuscar(event.target.value);
   };
 
   const renderNews = () => {
@@ -93,6 +93,7 @@ export default function Noticias() {
               description={data[i].descripcion}
               imageUrl={data[i].imagen}
               link={data[i].link}
+              font={data[i].fuente}
               func={() => guardarNoticia(data[i].titulo)}
               buttonName='Guardar'
               visible={true}
@@ -106,9 +107,18 @@ export default function Noticias() {
 
   return <div>
             <div>
-              <label htmlFor="miInput">Busca una noticia:</label>
-              <input type="text" id="miInput" value={valorABuscar} onChange={inputChange}/>
+<div>
+          <Styles.ActionButton onClick={() => setPath('politica')}>politica</Styles.ActionButton>
+          <Styles.ActionButton onClick={() => setPath('noticias')}>noticias</Styles.ActionButton>
+          <Styles.ActionButton onClick={() => setPath('deportes')}>deportes</Styles.ActionButton></div>
+          <div style={{width:'100%', display:'flex', flexDirection:'row', justifyContent:'center'}}>
+              <div style={{display: 'flex',height:'90px', maxWidth: '600px', width: '100%'}}>
+                <input placeholder='Busca una noticia' style={{fontFamily:'Roboto, sans-serif', textAlign: 'center', color: '#555', fontWeight: 'bold', flex: '1', padding: '10px', border: '1px solid #000', borderRadius: '4px 0 0 4px', outline: 'none', marginBottom:'3rem'}} type="text" id="miInput" value={valorABuscar} onChange={inputChange}/>
+              </div>
+            </div>
             </div>
             <Styles.NewsContainer2>{renderNews()}</Styles.NewsContainer2>
           </div>;
 }
+
+export default Noticias;

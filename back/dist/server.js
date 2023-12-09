@@ -23,15 +23,44 @@ const PORT = 3001;
 const db = (0, firestore_1.getFirestore)();
 app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
-app.get('/clarin-rss', async (req, res) => {
+app.get('/clarin', async (req, res) => {
     try {
-        const response = await axios_1.default.get('https://www.clarin.com/rss/lo-ultimo/');
-        console.log(response.data);
-        res.send(response.data);
+        const clarin = await parseRss('https://www.clarin.com/rss/lo-ultimo/');
+        res.send(clarin);
     }
     catch (error) {
         console.log(error);
         res.status(500).send('Error al obtener los datos de Clarín.');
+    }
+});
+app.get('/pagina12', async (req, res) => {
+    try {
+        const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/el-pais/notas');
+        res.send(p12);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send('Error al obtener los datos de pagina12.');
+    }
+});
+app.get('/telam', async (req, res) => {
+    try {
+        const telam = await parseRss('https://www.telam.com.ar/rss2/ultimasnoticias.xml');
+        res.send(telam);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send('Error al obtener los datos de telam.');
+    }
+});
+app.get('/cronica', async (req, res) => {
+    try {
+        const cronica = await parseRss('https://www.diariocronica.com.ar/rss/noticias');
+        res.send(cronica);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send('Error al obtener los datos de cronica.');
     }
 });
 app.get('/noticias', async (req, res) => {
@@ -52,7 +81,7 @@ app.get('/politica', async (req, res) => {
         const clarin = await parseRss('https://www.clarin.com/rss/politica/');
         const telam = await parseRss('https://www.telam.com.ar/rss2/politica.xml');
         const cronica = await parseRss('https://www.diariocronica.com.ar/rss/politica');
-        res.send(clarin.concat(telam).concat(cronica));
+        res.send(shuffle(clarin.concat(telam).concat(cronica)));
     }
     catch (error) {
         console.log(error);
@@ -65,7 +94,7 @@ app.get('/deportes', async (req, res) => {
         const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/deportes/notas');
         const telam = await parseRss('https://www.telam.com.ar/rss2/deportes.xml');
         const cronica = await parseRss('https://www.diariocronica.com.ar/rss/deportes');
-        res.send(clarin.concat(p12).concat(telam).concat(cronica));
+        res.send(shuffle(clarin.concat(p12).concat(telam).concat(cronica)));
     }
     catch (error) {
         console.log(error);
@@ -73,7 +102,7 @@ app.get('/deportes', async (req, res) => {
     }
 });
 const parseRss = async (url) => {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e;
     const xml = (await axios_1.default.get(url)).data;
     let res;
     (0, xml2js_1.parseString)(xml, { explicitArray: false }, (error, result) => {
@@ -91,9 +120,9 @@ const parseRss = async (url) => {
             titulo: res.rss.channel.item[i].title,
             fuente: (_a = res.rss.channel) === null || _a === void 0 ? void 0 : _a.link,
             descripcion: res.rss.channel.item[i].description,
-            imagen: (_c = (_b = res.rss.channel.item[i].enclosure) === null || _b === void 0 ? void 0 : _b.$.url) !== null && _c !== void 0 ? _c : res.rss.channel.item[i]['media:content'].$.url,
+            imagen: (_e = (_c = (_b = res.rss.channel.item[i].enclosure) === null || _b === void 0 ? void 0 : _b.$.url) !== null && _c !== void 0 ? _c : (_d = res.rss.channel.item[i]['media:content']) === null || _d === void 0 ? void 0 : _d.$.url) !== null && _e !== void 0 ? _e : 'https://www.webempresa.com/foro/wp-content/uploads/wpforo/attachments/3200/318277=80538-Sin_imagen_disponible.jpg',
             link: res.rss.channel.item[i].link,
-            id: res.rss.channel.item[i].title,
+            id: i.toLocaleString().concat(res.rss.channel.link),
         });
     }
     return result;

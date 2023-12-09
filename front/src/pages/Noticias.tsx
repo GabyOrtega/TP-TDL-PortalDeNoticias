@@ -16,9 +16,10 @@ type NoticiaResponse = {
 };
 
 const Noticias: React.FC = () => {
-  const [valorABuscar, setValorABuscar] = useState<string | undefined>('');
+  const [valorABuscar, setValorABuscar] = useState<string>('');
   const [data, setData] = useState<NoticiaResponse[] | null>(null);
-  const [noticeType, setPath] = useState<string>("noticias");
+  const [filteredData, setFilteredData] = useState<NoticiaResponse[]>([]);
+  const [noticeType, setNoticeType] = useState<string>("noticias");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,6 +28,7 @@ const Noticias: React.FC = () => {
         const response = await axios.get(`http://localhost:3001/${noticeType}`);
         console.log(response.data);
         setData(response.data);
+        setFilteredData(response.data);
       } catch (error) {
         console.error('Fetch error:', error);
       }
@@ -36,11 +38,34 @@ const Noticias: React.FC = () => {
     fetchData();
   }, [noticeType]);
 
+  useEffect(() => {
+    if (data) {
+      const filtered =
+        valorABuscar === ''
+          ? data
+          : data.filter((item) => {
+              const contieneCadenaEnTitulo =
+                item.titulo &&
+                item.titulo.toLowerCase().includes(valorABuscar.toLowerCase());
+              const contieneCadenaEnDescripcion =
+                item.descripcion && item.descripcion.includes(valorABuscar);
+              const contieneCadenaEnMedio =
+                item.fuente && item.fuente.includes(valorABuscar);
+              return (
+                contieneCadenaEnTitulo ||
+                contieneCadenaEnMedio ||
+                contieneCadenaEnDescripcion
+              );
+            });
+      setFilteredData(filtered);
+    }
+  }, [valorABuscar, data]);
+
   const guardarNoticia = async (indice: string) => {
     try {
       const userId = await getUserId();
       const newsData = data?.filter((d) => d.titulo === indice)[0];
-      if(!newsData) return;
+      if (!newsData) return;
       await axios.post('http://localhost:3001/noticias', {
         titulo: newsData!.titulo,
         fuente: newsData!.fuente,
@@ -75,42 +100,50 @@ const Noticias: React.FC = () => {
     setValorABuscar(event.target.value);
   };
 
+  const pathChange = (path: string) => {
+    if(path === noticeType || path === '')
+      return;
+    setFilteredData([]);
+    setNoticeType(path);
+  };
+
   const renderNews = () => {
     const items = [];
-    if (data) {
-      for (let i = 0; i < data.length; i++) {
-        var contieneCadenaEnTitulo = false;
-        var contieneCadenaEnDescripcion = false;
-        if(valorABuscar != null){
-          if((data[i].titulo != null)) contieneCadenaEnTitulo = (data[i].titulo.toLowerCase()).indexOf(valorABuscar.toLowerCase()) !== -1;
-          if((data[i].descripcion != null)) contieneCadenaEnDescripcion = (data[i].descripcion).indexOf(valorABuscar) !== -1;
-        }
-        if((valorABuscar == null) || contieneCadenaEnTitulo || contieneCadenaEnDescripcion )
-        items.push(
-          <div key={data[i].titulo}>
-            <Noticia
-              title={data[i].titulo}
-              description={data[i].descripcion}
-              imageUrl={data[i].imagen}
-              link={data[i].link}
-              font={data[i].fuente}
-              func={() => guardarNoticia(data[i].titulo)}
-              buttonName='Guardar'
-              visible={true}
-            />
-          </div>
-        );
-      }
+    const displayData = filteredData || [];
+    for (let i = 0; i < displayData.length; i++) {
+      items.push(
+        <div key={displayData[i].id}>
+          <Noticia
+            title={displayData[i].titulo}
+            description={displayData[i].descripcion}
+            imageUrl={displayData[i].imagen}
+            link={displayData[i].link}
+            font={displayData[i].fuente}
+            func={() => guardarNoticia(displayData[i].titulo)}
+            buttonName='Guardar'
+            visible={true}
+          />
+        </div>
+      );
     }
     return items;
   };
 
   return <div>
             <div>
-<div>
-          <Styles.ActionButton onClick={() => setPath('politica')}>politica</Styles.ActionButton>
-          <Styles.ActionButton onClick={() => setPath('noticias')}>noticias</Styles.ActionButton>
-          <Styles.ActionButton onClick={() => setPath('deportes')}>deportes</Styles.ActionButton></div>
+            <Styles.DropdownContainer>
+            <label htmlFor="menu">Selecciona una opción: </label>
+      <Styles.DropdownMenu onChange={(e) => pathChange(e.target.value)}>
+        <Styles.DropdownOption value="">Elige una opción</Styles.DropdownOption>
+        <Styles.DropdownOption value="noticias">Inicio</Styles.DropdownOption>
+        <Styles.DropdownOption value="politica">Politica</Styles.DropdownOption>
+        <Styles.DropdownOption value="deportes">Deportes</Styles.DropdownOption>
+        <Styles.DropdownOption value="clarin">Clarin</Styles.DropdownOption>
+        <Styles.DropdownOption value="cronica">Cronica</Styles.DropdownOption>
+        <Styles.DropdownOption value="telam">Telam</Styles.DropdownOption>
+        <Styles.DropdownOption value="pagina12">Pagina 12</Styles.DropdownOption>
+      </Styles.DropdownMenu>
+    </Styles.DropdownContainer>
           <div style={{width:'100%', display:'flex', flexDirection:'row', justifyContent:'center'}}>
               <div style={{display: 'flex',height:'90px', maxWidth: '600px', width: '100%'}}>
                 <input placeholder='Busca una noticia' style={{fontFamily:'Roboto, sans-serif', textAlign: 'center', color: '#555', fontWeight: 'bold', flex: '1', padding: '10px', border: '1px solid #000', borderRadius: '4px 0 0 4px', outline: 'none', marginBottom:'3rem'}} type="text" id="miInput" value={valorABuscar} onChange={inputChange}/>

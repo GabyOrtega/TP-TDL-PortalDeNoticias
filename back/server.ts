@@ -24,14 +24,43 @@ const db = getFirestore();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get('/clarin-rss', async (req, res) => {
+app.get('/clarin', async (req, res) => {
   try {
-    const response = await axios.get('https://www.clarin.com/rss/lo-ultimo/');
-    console.log(response.data);
-    res.send(response.data);
+    const clarin = await parseRss('https://www.clarin.com/rss/lo-ultimo/');
+    res.send(clarin);
   } catch (error) {
     console.log(error);
     res.status(500).send('Error al obtener los datos de Clarín.');
+  }
+});
+
+app.get('/pagina12', async (req, res) => {
+  try {
+    const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/el-pais/notas');
+    res.send(p12);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Error al obtener los datos de pagina12.');
+  }
+});
+
+app.get('/telam', async (req, res) => {
+  try {
+    const telam = await parseRss('https://www.telam.com.ar/rss2/ultimasnoticias.xml');
+    res.send(telam);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Error al obtener los datos de telam.');
+  }
+});
+
+app.get('/cronica', async (req, res) => {
+  try {
+    const cronica = await parseRss('https://www.diariocronica.com.ar/rss/noticias');
+    res.send(cronica);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Error al obtener los datos de cronica.');
   }
 });
 
@@ -90,9 +119,9 @@ const parseRss = async (url: string) => {
       titulo: res!.rss.channel.item[i].title,
       fuente: res!.rss.channel?.link,
       descripcion: res!.rss.channel.item[i].description,
-      imagen: res!.rss.channel.item[i].enclosure?.$.url ?? res!.rss.channel.item[i]['media:content']!.$.url,
+      imagen: res!.rss.channel.item[i].enclosure?.$.url ?? res!.rss.channel.item[i]['media:content']?.$.url ?? 'https://www.webempresa.com/foro/wp-content/uploads/wpforo/attachments/3200/318277=80538-Sin_imagen_disponible.jpg',
       link: res!.rss.channel.item[i].link,
-      id: res!.rss.channel.item[i].title,
+      id: i.toLocaleString().concat(res!.rss.channel.link),
     })
   }
   return result

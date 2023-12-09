@@ -125,3 +125,20 @@ export const StyledButton = styled.button`
     background-color: #0E71A8;
   }
 `;
+
+export const DropdownContainer = styled.div`
+  margin-top: 20px;
+`;
+
+export const DropdownMenu = styled.select`
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1DA1F2;
+  color: #ffffff;
+`;
+
+export const DropdownOption = styled.option`
+  background-color: #1DA1F2;
+  color: #ffffff;
+`;

@@ -10,6 +10,8 @@ export const Container = styled.div`
 `;
 
 export const TitleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
   background-color: #E6E6FA;
   padding: 1rem;
   border-radius: 8px;
@@ -19,13 +21,18 @@ export const TitleContainer = styled.div`
   width: 100%;
 `;
 
-export const Title = styled.p`
-  font-size: 36px;
-  font-weight: bold;
-  color: #800080;
+export const Title = styled.h1`
+  font-family: 'Libre Baskerville', serif; 
+  color: black; 
+  font-size: 2em; 
   margin: 0;
-  justify-content: center;
-  align-items: center;
+`;
+
+export const TitleLogo = styled.img`
+  width: 50px; 
+  height: auto; 
+  margin-right: 10px;
+  margin-left : 10px; 
 `;
 
 export const ButtonsContainer = styled.div`
@@ -123,6 +130,57 @@ export const StyledButton = styled.button`
 
   &:hover {
     background-color: #0E71A8;
+  }
+`;
+
+export const ShareContainer = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+export const ShareButton = styled.div`
+  background-color: #E6E6FA;
+  color: #1DA1F2;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  &:hover {
+    text-decoration : underline ;
+  }
+`;
+
+export const Icon = styled.img`
+  width: 20px;
+  height: 20px;
+  margin: 5px;
+`;
+
+export const Menu = styled.div`
+  position: absolute;
+  bottom: 100%;
+  background-color: #F0F0FF;
+  left: 0;
+  min-width: 10px;
+  font-size:13px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const MenuItem = styled.a`
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: black;
+  padding: 10px;
+  height: 15px;
+
+  &:hover {
+    background-color: #ddd;
   }
 `;
 

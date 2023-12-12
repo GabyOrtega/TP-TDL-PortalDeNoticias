@@ -5,7 +5,6 @@ import { getAuth, signOut } from 'firebase/auth';
 import Noticias from './Noticias';
 import NoticiasGuardadas from './NoticiasGuardadas';
 import * as Styles from './styles';
-import { Button } from 'react-bootstrap';
 
 export interface IHomePageProps {}
 
@@ -20,7 +19,8 @@ const HomePage: React.FC<IHomePageProps> = (props) => {
   return (
     <Styles.Container>
       <Styles.TitleContainer>
-        <Styles.Title>Los 3 mosqueteros Noticias</Styles.Title>
+        <Styles.Title>Los 3 mosqueteros</Styles.Title>
+        <Styles.TitleLogo src="https://svgsilh.com/svg/2281334.svg" alt='logo' />
       </Styles.TitleContainer>
 
       <Styles.ButtonsContainer>

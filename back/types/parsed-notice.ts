@@ -1,4 +1,4 @@
-export type NoticiaGuardadaResponse = {
+export type ParsedNotice = {
     titulo: string;
     fuente: string;
     descripcion: string;

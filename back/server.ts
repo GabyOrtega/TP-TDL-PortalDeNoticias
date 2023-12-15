@@ -5,7 +5,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import bodyParser from 'body-parser';
 import { shuffle } from './utils/shufle';
 import { urls } from './utils/urls';
-import { NoticiaGuardadaResponse } from './types/noticia-guardada';
+import { ParsedNotice } from './types/parsed-notice';
 import { noticeRetriever } from './utils/notice-retriever';
 
 const app = express();
@@ -43,7 +43,7 @@ app.get('/newspaper/:newspaper', async (req, res) => {
 app.get('/notice/:noticeType', async (req, res) => {
   try {
     const noticeType: string = req.params.noticeType.toLowerCase(); 
-    let response: NoticiaGuardadaResponse[] = [];
+    let response: ParsedNotice[] = [];
     if (noticeType !== 'sports' && noticeType !== 'basic' && noticeType != 'politic') {
       res.status(400).send();
       return;
@@ -68,7 +68,7 @@ app.get('/newspaper-notice/:newspaper/:noticeType', async (req, res) => {
       return;
     }
     const noticeType: string = req.params.noticeType.toLowerCase(); 
-    let response: NoticiaGuardadaResponse[] = [];
+    let response: ParsedNotice[] = [];
     if (noticeType !== 'sports' && noticeType !== 'basic' && noticeType != 'politic') {
       res.status(400).send();
       return;
@@ -90,7 +90,7 @@ app.get('/noticiasGuardadas', async (req, res) => {
     console.log('userID', uid);
     const noticias = db.collection('noticias');
     const resultado = await noticias.where('uid', '==', uid).get();
-    const arrayNoticias: NoticiaGuardadaResponse[] = [];
+    const arrayNoticias: ParsedNotice[] = [];
     resultado.forEach((noticia) => {
       return arrayNoticias.push({
         id: noticia.id,

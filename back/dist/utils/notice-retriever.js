@@ -20,7 +20,8 @@ const noticeRetriever = async (url) => {
         }
     });
     const result = [];
-    for (let i = 0; i < res.rss.channel.item.length; i++) {
+    const maxResults = res.rss.channel.item.length > 20 ? 20 : res.rss.channel.item.length;
+    for (let i = 0; i < maxResults; i++) {
         result.push({
             titulo: res.rss.channel.item[i].title,
             fuente: (_a = res.rss.channel) === null || _a === void 0 ? void 0 : _a.link,

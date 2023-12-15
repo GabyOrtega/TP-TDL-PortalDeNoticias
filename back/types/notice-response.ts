@@ -1,4 +1,4 @@
-export type NoticiaResponse = {
+export type NoticeResponse = {
     rss: {
         channel: {
             link: string;

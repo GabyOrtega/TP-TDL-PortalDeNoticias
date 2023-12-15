@@ -1,21 +1,22 @@
 import axios from 'axios';
 import { parseString } from 'xml2js';
-import {NoticiaResponse} from '../types/noticia-response';
-import { NoticiaGuardadaResponse } from '../types/noticia-guardada';
+import {NoticeResponse} from '../types/notice-response';
+import { ParsedNotice } from '../types/parsed-notice';
 
 export const noticeRetriever = async (url: string) => {
     const xml = (await axios.get(url)).data
-    let res: NoticiaResponse;
+    let res: NoticeResponse;
     parseString(xml, { explicitArray: false }, (error, result) => {
       if (error) {
         console.error('Error parsing XML:', error);
         throw new Error();
       } else {
-        res = (result as NoticiaResponse);
+        res = (result as NoticeResponse);
       }
     });
-    const result: NoticiaGuardadaResponse[] = [];
-    for (let i = 0; i < res!.rss.channel.item.length; i++) {
+    const result: ParsedNotice[] = [];
+    const maxResults =  res!.rss.channel.item.length > 20 ? 20 :  res!.rss.channel.item.length;
+    for (let i = 0; i < maxResults; i++) {
       result.push({
         titulo: res!.rss.channel.item[i].title,
         fuente: res!.rss.channel?.link,

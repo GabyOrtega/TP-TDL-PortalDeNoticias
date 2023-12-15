@@ -5,11 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const axios_1 = __importDefault(require("axios"));
 const app_1 = require("firebase-admin/app");
 const firestore_1 = require("firebase-admin/firestore");
-const xml2js_1 = require("xml2js");
 const body_parser_1 = __importDefault(require("body-parser"));
+const shufle_1 = require("./utils/shufle");
+const urls_1 = require("./utils/urls");
+const notice_retriever_1 = require("./utils/notice-retriever");
 const app = (0, express_1.default)();
 const PORT = 3001;
 (0, app_1.initializeApp)({
@@ -25,7 +26,7 @@ app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
 app.get('/clarin', async (req, res) => {
     try {
-        const clarin = await parseRss('https://www.clarin.com/rss/lo-ultimo/');
+        const clarin = await (0, notice_retriever_1.noticeRetriever)(urls_1.urls.clarin.basic);
         res.send(clarin);
     }
     catch (error) {
@@ -35,7 +36,7 @@ app.get('/clarin', async (req, res) => {
 });
 app.get('/pagina12', async (req, res) => {
     try {
-        const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/el-pais/notas');
+        const p12 = await (0, notice_retriever_1.noticeRetriever)(urls_1.urls.pagina12.basic);
         res.send(p12);
     }
     catch (error) {
@@ -45,7 +46,7 @@ app.get('/pagina12', async (req, res) => {
 });
 app.get('/telam', async (req, res) => {
     try {
-        const telam = await parseRss('https://www.telam.com.ar/rss2/ultimasnoticias.xml');
+        const telam = await (0, notice_retriever_1.noticeRetriever)(urls_1.urls.telam.basic);
         res.send(telam);
     }
     catch (error) {
@@ -55,7 +56,7 @@ app.get('/telam', async (req, res) => {
 });
 app.get('/cronica', async (req, res) => {
     try {
-        const cronica = await parseRss('https://www.diariocronica.com.ar/rss/noticias');
+        const cronica = await (0, notice_retriever_1.noticeRetriever)(urls_1.urls.cronica.basic);
         res.send(cronica);
     }
     catch (error) {
@@ -65,11 +66,14 @@ app.get('/cronica', async (req, res) => {
 });
 app.get('/noticias', async (req, res) => {
     try {
-        const clarin = await parseRss('https://www.clarin.com/rss/lo-ultimo/');
-        const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/el-pais/notas');
-        const telam = await parseRss('https://www.telam.com.ar/rss2/ultimasnoticias.xml');
-        const cronica = await parseRss('https://www.diariocronica.com.ar/rss/noticias');
-        res.send(shuffle(clarin.concat(p12).concat(telam).concat(cronica)));
+        let response = [];
+        for (let newspaper in urls_1.urls) {
+            console.log(urls_1.urls[newspaper]['basic']);
+            if (urls_1.urls[newspaper]['basic']) {
+                response = response.concat(await (0, notice_retriever_1.noticeRetriever)(urls_1.urls[newspaper]['basic']));
+            }
+        }
+        res.send((0, shufle_1.shuffle)(response));
     }
     catch (error) {
         console.log(error);
@@ -78,10 +82,12 @@ app.get('/noticias', async (req, res) => {
 });
 app.get('/politica', async (req, res) => {
     try {
-        const clarin = await parseRss('https://www.clarin.com/rss/politica/');
-        const telam = await parseRss('https://www.telam.com.ar/rss2/politica.xml');
-        const cronica = await parseRss('https://www.diariocronica.com.ar/rss/politica');
-        res.send(shuffle(clarin.concat(telam).concat(cronica)));
+        const response = [];
+        for (let newspaper in urls_1.urls) {
+            if (urls_1.urls[newspaper]['politica'])
+                response.concat(await (0, notice_retriever_1.noticeRetriever)(urls_1.urls[newspaper]['politica']));
+        }
+        res.send((0, shufle_1.shuffle)(response));
     }
     catch (error) {
         console.log(error);
@@ -90,43 +96,18 @@ app.get('/politica', async (req, res) => {
 });
 app.get('/deportes', async (req, res) => {
     try {
-        const clarin = await parseRss('https://www.clarin.com/rss/deportes/');
-        const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/deportes/notas');
-        const telam = await parseRss('https://www.telam.com.ar/rss2/deportes.xml');
-        const cronica = await parseRss('https://www.diariocronica.com.ar/rss/deportes');
-        res.send(shuffle(clarin.concat(p12).concat(telam).concat(cronica)));
+        const response = [];
+        for (let newspaper in urls_1.urls) {
+            if (urls_1.urls[newspaper]['deportes'])
+                response.concat(await (0, notice_retriever_1.noticeRetriever)(urls_1.urls[newspaper]['deportes']));
+        }
+        res.send((0, shufle_1.shuffle)(response));
     }
     catch (error) {
         console.log(error);
-        res.status(500).send('Error al obtener los datos de noticias.');
+        res.status(500).send('Error al obtener los datos de deportes.');
     }
 });
-const parseRss = async (url) => {
-    var _a, _b, _c, _d, _e;
-    const xml = (await axios_1.default.get(url)).data;
-    let res;
-    (0, xml2js_1.parseString)(xml, { explicitArray: false }, (error, result) => {
-        if (error) {
-            console.error('Error parsing XML:', error);
-            throw new Error();
-        }
-        else {
-            res = result;
-        }
-    });
-    const result = [];
-    for (let i = 0; i < res.rss.channel.item.length; i++) {
-        result.push({
-            titulo: res.rss.channel.item[i].title,
-            fuente: (_a = res.rss.channel) === null || _a === void 0 ? void 0 : _a.link,
-            descripcion: res.rss.channel.item[i].description,
-            imagen: (_e = (_c = (_b = res.rss.channel.item[i].enclosure) === null || _b === void 0 ? void 0 : _b.$.url) !== null && _c !== void 0 ? _c : (_d = res.rss.channel.item[i]['media:content']) === null || _d === void 0 ? void 0 : _d.$.url) !== null && _e !== void 0 ? _e : 'https://www.webempresa.com/foro/wp-content/uploads/wpforo/attachments/3200/318277=80538-Sin_imagen_disponible.jpg',
-            link: res.rss.channel.item[i].link,
-            id: i.toLocaleString().concat(res.rss.channel.link),
-        });
-    }
-    return result;
-};
 app.get('/noticiasGuardadas', async (req, res) => {
     try {
         console.log('REQ', req.query.uid);
@@ -136,13 +117,13 @@ app.get('/noticiasGuardadas', async (req, res) => {
         const resultado = await noticias.where('uid', '==', uid).get();
         const arrayNoticias = [];
         resultado.forEach((noticia) => {
-            arrayNoticias.push({
+            return arrayNoticias.push({
                 id: noticia.id,
                 titulo: noticia.data().titulo,
                 fuente: noticia.data().fuente,
                 descripcion: noticia.data().descripcion,
                 imagen: noticia.data().imagen,
-                uid: noticia.data().uid
+                link: noticia.data().link
             });
         });
         res.send(arrayNoticias);
@@ -160,6 +141,7 @@ app.post('/noticias', async (req, res) => {
             fuente: req.body.fuente,
             descripcion: req.body.descripcion,
             imagen: req.body.imagen,
+            link: req.body.link,
             uid: req.body.uid
         });
         res.status(200).send('Noticia guardada correctamente.');
@@ -182,13 +164,6 @@ app.get('/borrarNoticiaGuardada', async (req, res) => {
         res.status(500).send('Error al borrar la noticia.');
     }
 });
-const shuffle = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-};
 app.listen(PORT, () => {
     console.log(`Servidor backend en http://localhost:${PORT}`);
 });

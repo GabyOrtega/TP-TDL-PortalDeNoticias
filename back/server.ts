@@ -1,11 +1,12 @@
 import express from 'express';
 import cors from 'cors';
-import axios from 'axios';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { parseString } from 'xml2js';
 import bodyParser from 'body-parser';
-import {NoticiaGuardadaResponse, NoticiaResponse} from './types/noticia-response';
+import { shuffle } from './utils/shufle';
+import { urls } from './utils/urls';
+import { NoticiaGuardadaResponse } from './types/noticia-guardada';
+import { noticeRetriever } from './utils/notice-retriever';
 
 const app = express();
 const PORT = 3001;
@@ -26,7 +27,7 @@ app.use(bodyParser.json());
 
 app.get('/clarin', async (req, res) => {
   try {
-    const clarin = await parseRss('https://www.clarin.com/rss/lo-ultimo/');
+    const clarin = await noticeRetriever(urls.clarin.basic);
     res.send(clarin);
   } catch (error) {
     console.log(error);
@@ -36,7 +37,7 @@ app.get('/clarin', async (req, res) => {
 
 app.get('/pagina12', async (req, res) => {
   try {
-    const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/el-pais/notas');
+    const p12 = await noticeRetriever(urls.pagina12.basic);
     res.send(p12);
   } catch (error) {
     console.log(error);
@@ -46,7 +47,7 @@ app.get('/pagina12', async (req, res) => {
 
 app.get('/telam', async (req, res) => {
   try {
-    const telam = await parseRss('https://www.telam.com.ar/rss2/ultimasnoticias.xml');
+    const telam = await noticeRetriever(urls.telam.basic);
     res.send(telam);
   } catch (error) {
     console.log(error);
@@ -56,7 +57,7 @@ app.get('/telam', async (req, res) => {
 
 app.get('/cronica', async (req, res) => {
   try {
-    const cronica = await parseRss('https://www.diariocronica.com.ar/rss/noticias');
+    const cronica = await noticeRetriever(urls.cronica.basic);
     res.send(cronica);
   } catch (error) {
     console.log(error);
@@ -66,11 +67,14 @@ app.get('/cronica', async (req, res) => {
 
 app.get('/noticias', async (req, res) => {
   try {
-    const clarin = await parseRss('https://www.clarin.com/rss/lo-ultimo/');
-    const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/el-pais/notas');
-    const telam = await parseRss('https://www.telam.com.ar/rss2/ultimasnoticias.xml');
-    const cronica = await parseRss('https://www.diariocronica.com.ar/rss/noticias');
-    res.send(shuffle(clarin.concat(p12).concat(telam).concat(cronica)));
+    let response: NoticiaGuardadaResponse[] = [];
+    for(let newspaper in urls){
+      console.log(urls[newspaper]['basic'])
+      if (urls[newspaper]['basic']) {
+        response = response.concat(await noticeRetriever(urls[newspaper]['basic']))
+      }
+    }
+    res.send(shuffle(response));
   } catch (error) {
     console.log(error);
     res.status(500).send('Error al obtener los datos de noticias.');
@@ -79,10 +83,13 @@ app.get('/noticias', async (req, res) => {
 
 app.get('/politica', async (req, res) => {
   try {
-    const clarin = await parseRss('https://www.clarin.com/rss/politica/');
-    const telam = await parseRss('https://www.telam.com.ar/rss2/politica.xml');
-    const cronica = await parseRss('https://www.diariocronica.com.ar/rss/politica');
-    res.send(shuffle(clarin.concat(telam).concat(cronica)));
+    let response: NoticiaGuardadaResponse[] = [];
+    for(let newspaper in urls){
+      if (urls[newspaper]['politica']) {
+        response = response.concat(await noticeRetriever(urls[newspaper]['politica']!))
+      }
+    }
+    res.send(shuffle(response));
   } catch (error) {
     console.log(error);
     res.status(500).send('Error al obtener los datos de politica.');
@@ -91,41 +98,20 @@ app.get('/politica', async (req, res) => {
 
 app.get('/deportes', async (req, res) => {
   try {
-    const clarin = await parseRss('https://www.clarin.com/rss/deportes/');
-    const p12 = await parseRss('https://www.pagina12.com.ar/rss/secciones/deportes/notas');
-    const telam = await parseRss('https://www.telam.com.ar/rss2/deportes.xml');
-    const cronica = await parseRss('https://www.diariocronica.com.ar/rss/deportes');
-    res.send(shuffle(clarin.concat(p12).concat(telam).concat(cronica)));
+    let response: NoticiaGuardadaResponse[] = [];
+    for(let newspaper in urls){
+      if (urls[newspaper]['deportes']) {
+        response = response.concat(await noticeRetriever(urls[newspaper]['deportes']!))
+      }
+    }
+    res.send(shuffle(response));
   } catch (error) {
     console.log(error);
-    res.status(500).send('Error al obtener los datos de noticias.');
+    res.status(500).send('Error al obtener los datos de deportes.');
   }
 });
 
-const parseRss = async (url: string) => {
-  const xml = (await axios.get(url)).data
-  let res: NoticiaResponse;
-  parseString(xml, { explicitArray: false }, (error, result) => {
-    if (error) {
-      console.error('Error parsing XML:', error);
-      throw new Error();
-    } else {
-      res = (result as NoticiaResponse);
-    }
-  });
-  const result: NoticiaGuardadaResponse[] = [];
-  for (let i = 0; i < res!.rss.channel.item.length; i++) {
-    result.push({
-      titulo: res!.rss.channel.item[i].title,
-      fuente: res!.rss.channel?.link,
-      descripcion: res!.rss.channel.item[i].description,
-      imagen: res!.rss.channel.item[i].enclosure?.$.url ?? res!.rss.channel.item[i]['media:content']?.$.url ?? 'https://www.webempresa.com/foro/wp-content/uploads/wpforo/attachments/3200/318277=80538-Sin_imagen_disponible.jpg',
-      link: res!.rss.channel.item[i].link,
-      id: i.toLocaleString().concat(res!.rss.channel.link),
-    })
-  }
-  return result
-};
+
 
 app.get('/noticiasGuardadas', async (req, res) => {
   try {
@@ -134,15 +120,15 @@ app.get('/noticiasGuardadas', async (req, res) => {
     console.log('userID', uid);
     const noticias = db.collection('noticias');
     const resultado = await noticias.where('uid', '==', uid).get();
-    const arrayNoticias: any[] = [];
+    const arrayNoticias: NoticiaGuardadaResponse[] = [];
     resultado.forEach((noticia) => {
-      arrayNoticias.push({
+      return arrayNoticias.push({
         id: noticia.id,
         titulo: noticia.data().titulo,
         fuente: noticia.data().fuente,
         descripcion: noticia.data().descripcion,
         imagen: noticia.data().imagen,
-        uid: noticia.data().uid
+        link: noticia.data().link
       });
     });
     res.send(arrayNoticias);
@@ -160,6 +146,7 @@ app.post('/noticias', async (req, res) => {
       fuente: req.body.fuente,
       descripcion: req.body.descripcion,
       imagen: req.body.imagen,
+      link: req.body.link,
       uid: req.body.uid
     });
     res.status(200).send('Noticia guardada correctamente.');
@@ -182,13 +169,7 @@ app.get('/borrarNoticiaGuardada', async (req, res) => {
   }
 });
 
-const shuffle = (array: NoticiaGuardadaResponse[]) => { 
-  for (let i = array.length - 1; i > 0; i--) { 
-    const j = Math.floor(Math.random() * (i + 1)); 
-    [array[i], array[j]] = [array[j], array[i]]; 
-  } 
-  return array; 
-}; 
+
 
 app.listen(PORT, () => {
   console.log(`Servidor backend en http://localhost:${PORT}`);

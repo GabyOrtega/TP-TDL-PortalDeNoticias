@@ -42,7 +42,7 @@ const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, f
     return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`;
   };
 
-  const getPageImage = (page: string) => {
+  const retrieveNewspaperImage = (page: string) => {
     if(page.includes('clarin')){
       return <img alt="Miniatura de la versión del 00:01 27 ene 2019" src="//upload.wikimedia.org/wikipedia/commons/thumb/7/73/Clar%C3%ADn_logo.svg/120px-Clar%C3%ADn_logo.svg.png" decoding="async" loading="lazy" width="120" height="31" data-file-width="100" data-file-height="26"></img>}
     if(page.includes('pagina12'))
@@ -63,12 +63,11 @@ const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, f
     >
       <Styles.NoticiaContent>
         <Styles.NoticiaText>
-        <div style={{  display: 'flex',  flexDirection: 'column',  alignItems: 'center',  justifyContent: 'center'}}>{getPageImage(font)}</div>
-          <h3>{title}</h3>
+        <div style={{  display: 'flex',  flexDirection: 'column',  alignItems: 'center',  justifyContent: 'center'}}>{retrieveNewspaperImage(font)}</div>
+        <Styles.NewsTitle>{title}</Styles.NewsTitle>
           {isFocused && <div dangerouslySetInnerHTML={{ __html: description }} />}
         </Styles.NoticiaText>
         <Styles.NoticiaImage src={imageUrl} alt={title} />
-      </Styles.NoticiaContent>
       <Styles.StyledRow>
         <Styles.StyledLink href={link}>Ver más</Styles.StyledLink>
         <Styles.ShareContainer>
@@ -95,6 +94,7 @@ const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, f
         </Styles.ShareContainer>
         {isVisible && <Styles.StyledButton onClick={handleButton}>{buttonName}</Styles.StyledButton>}
       </Styles.StyledRow>
+      </Styles.NoticiaContent>
     </Styles.NoticiaContainer>
   );
 };

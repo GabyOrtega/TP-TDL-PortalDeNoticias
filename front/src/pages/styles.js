@@ -28,6 +28,12 @@ export const Title = styled.h1`
   margin: 0;
 `;
 
+export const NewsTitle = styled.h3`
+  color: black; 
+  font-size: 18px; 
+  margin: 10px;
+  height: 80px;
+`;
 export const TitleLogo = styled.img`
   width: 50px; 
   height: auto; 
@@ -107,7 +113,7 @@ export const NoticiaImage = styled.img`
 export const StyledRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
 `;
 
 export const StyledLink = styled.a`

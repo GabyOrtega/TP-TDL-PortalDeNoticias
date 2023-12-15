@@ -5,20 +5,11 @@ import Noticia from './Noticia';
 import { JSX } from 'react/jsx-runtime';
 import * as Styles from './styles';
 import NoData from './no-data';
-
-type NoticiaGuardadaResponse = {
-  titulo: string;
-  fuente: string;
-  descripcion: string;
-  imagen: string;
-  uid: string;
-  link: string;
-  id: string;
-};
+import { ParsedNotice } from '../types/parsed-notice';
 
 export default function NoticiasGuardadas() {
-  const [data, setData] = useState<NoticiaGuardadaResponse[]>([]);
-  const [borrado, setBorrado] = useState<boolean>(true);
+  const [data, setData] = useState<ParsedNotice[]>([]);
+  const [deleted, setDeleted] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,11 +31,11 @@ export default function NoticiasGuardadas() {
     };
 
     fetchData();
-  }, [borrado]); // Empty dependency array to run the effect only once on mount
+  }, [deleted]); // Empty dependency array to run the effect only once on mount
 
-  function borrarNoticiaGuardada(id: String){
+  function deleteSavedNotice(id: String){
     axios.get(`http://localhost:3001/borrarNoticiaGuardada?id=${id}`);
-    setBorrado(borrado ? false : true);
+    setDeleted(deleted ? false : true);
 }
 
   const renderNews = () => {
@@ -60,7 +51,7 @@ export default function NoticiasGuardadas() {
                   imageUrl={noticia.imagen}
                   link={noticia.link}
                   font={noticia.fuente}
-                  func={async () => borrarNoticiaGuardada(noticia.id)}
+                  func={async () => deleteSavedNotice(noticia.id)}
                   buttonName="Eliminar"
                   visible = {true}
                 />

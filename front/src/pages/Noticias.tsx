@@ -4,20 +4,12 @@ import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import Noticia from './Noticia';
 import * as Styles from './styles';
 import NoData from './no-data';
-
-type NoticiaResponse = {
-  titulo: string;
-  fuente: string;
-  descripcion: string;
-  imagen: string;
-  link: string;
-  id: string;
-};
+import { ParsedNotice } from '../types/parsed-notice';
 
 const Noticias: React.FC = () => {
   const [valorABuscar, setValorABuscar] = useState<string>('');
-  const [data, setData] = useState<NoticiaResponse[] | null>(null);
-  const [filteredData, setFilteredData] = useState<NoticiaResponse[]>([]);
+  const [data, setData] = useState<ParsedNotice[]>([]);
+  const [filteredData, setFilteredData] = useState<ParsedNotice[]>([]);
   const [fetch, setFetch] = useState<string>('notice/basic');
   const [noticeType, setNoticeType] = useState<string>('');
   const [newspaperType, setNewspaperType] = useState<string>('');
@@ -25,7 +17,6 @@ const Noticias: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setData(null);
         const response = await axios.get(`http://localhost:3001/${fetch}`);
         setData(response.data);
         setFilteredData(response.data);
@@ -38,11 +29,8 @@ const Noticias: React.FC = () => {
   }, [fetch]);
 
   useEffect(() => {
-    if (data) {
-      const filtered =
-        valorABuscar === ''
-          ? data
-          : data.filter((item) => {
+    if (data && valorABuscar !== '') {
+      const filtered = data.filter((item) => {
               const contieneCadenaEnTitulo =
                 item.titulo &&
                 item.titulo.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(valorABuscar.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase());
@@ -58,11 +46,14 @@ const Noticias: React.FC = () => {
             });
       setFilteredData(filtered);
     }
-  }, [valorABuscar, data]);
+  }, [valorABuscar]);
 
   const handleNoticeTypeChange = (value: string) => {
     setNoticeType(value);
-    if(newspaperType === '' && value !== '') {
+    if(value === 'basic'){
+      setNewspaperType('')
+      setFetch(`notice/${value}`);}
+    else if(newspaperType === '' && value !== '') {
       setFetch(`notice/${value}`);
     }
     else if(value !== ''){
@@ -72,7 +63,8 @@ const Noticias: React.FC = () => {
 
   const handleNewspaperTypeChange = (value: string) => {
     setNewspaperType(value);
-    if((noticeType === '' || noticeType == 'basic') && value !== '') {
+    if((noticeType === '' || noticeType === 'basic') && value !== '') {
+      setNoticeType('');
       setFetch(`newspaper/${value}`);
     }
     else if(value !== ''){
@@ -142,29 +134,27 @@ const Noticias: React.FC = () => {
   };
 
   return <div>
-      <div>
+      <Styles.StyledRow>
         <Styles.DropdownContainer>
-          <label htmlFor="noticeType">Selecciona un tipo de noticia: </label>
-          <select value={noticeType} onChange={(e) => handleNoticeTypeChange(e.target.value)}>
-            <option value="">Elige una opción</option>
+          <Styles.DropdownMenu value={noticeType} onChange={(e) => handleNoticeTypeChange(e.target.value)}>
+            <option value="">Selecciona un tipo de noticia</option>
             <option value="basic">Inicio</option>
             <option value="politic">Politica</option>
             <option value="sports">Deportes</option>
-          </select>
+          </Styles.DropdownMenu>
         </Styles.DropdownContainer>
 
         <Styles.DropdownContainer>
-          <label htmlFor="newspaperType">Selecciona un periódico: </label>
-          <select value={newspaperType} onChange={(e) => handleNewspaperTypeChange(e.target.value)}>
-            <option value="">Elige una opción</option>
+          <Styles.DropdownMenu value={newspaperType} onChange={(e) => handleNewspaperTypeChange(e.target.value)}>
+            <option value="">Selecciona un periódico</option>
             <option value="clarin">Clarin</option>
             <option value="cronica">Cronica</option>
             <option value="telam">Telam</option>
             <option value="pagina12">Pagina 12</option>
             <option value="ole">Olé</option>
-          </select>
+          </Styles.DropdownMenu>
         </Styles.DropdownContainer>
-      </div>
+      </Styles.StyledRow>
 
       <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
         <div style={{ display: 'flex', height: '90px', maxWidth: '600px', width: '100%' }}>

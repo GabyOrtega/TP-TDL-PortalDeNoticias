@@ -28,7 +28,7 @@ const HomePage: React.FC<IHomePageProps> = (props) => {
           style={{ backgroundColor: '#1DA1F2', borderColor: '#1DA1F2', marginRight: '1rem' }}
           onClick={toggleMostrarNoticiasGuardadas}
         >
-          {mostrarNoticiasGuardadas ? <span role="img">📰 Inicio</span> : <span role="img">📰 Mis Noticias</span>}
+          {mostrarNoticiasGuardadas ? <span role="img">📰 Inicio</span> : <span role="img">📰 Noticias guardadas</span>}
         </Styles.ActionButton>
 
         <Styles.ActionButton style={{ backgroundColor: '#DC3545', borderColor: '#DC3545' }} onClick={() => signOut(auth)}>

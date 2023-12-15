@@ -24,53 +24,32 @@ const PORT = 3001;
 const db = (0, firestore_1.getFirestore)();
 app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
-app.get('/clarin', async (req, res) => {
+app.get('/newspaper/:newspaper', async (req, res) => {
     try {
-        const clarin = await (0, notice_retriever_1.noticeRetriever)(urls_1.urls.clarin.basic);
-        res.send(clarin);
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).send('Error al obtener los datos de Clarín.');
-    }
-});
-app.get('/pagina12', async (req, res) => {
-    try {
-        const p12 = await (0, notice_retriever_1.noticeRetriever)(urls_1.urls.pagina12.basic);
-        res.send(p12);
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).send('Error al obtener los datos de pagina12.');
-    }
-});
-app.get('/telam', async (req, res) => {
-    try {
-        const telam = await (0, notice_retriever_1.noticeRetriever)(urls_1.urls.telam.basic);
-        res.send(telam);
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).send('Error al obtener los datos de telam.');
-    }
-});
-app.get('/cronica', async (req, res) => {
-    try {
-        const cronica = await (0, notice_retriever_1.noticeRetriever)(urls_1.urls.cronica.basic);
-        res.send(cronica);
+        const newspaper = req.params.newspaper.toLowerCase();
+        if (newspaper !== 'cronica' && newspaper !== 'pagina12' && newspaper != 'telam' && newspaper != 'clarin' && newspaper != 'ole') {
+            res.status(400).send();
+            return;
+        }
+        const notices = await (0, notice_retriever_1.noticeRetriever)(urls_1.urls[newspaper]['basic']);
+        res.send(notices);
     }
     catch (error) {
         console.log(error);
         res.status(500).send('Error al obtener los datos de cronica.');
     }
 });
-app.get('/noticias', async (req, res) => {
+app.get('/notice/:noticeType', async (req, res) => {
     try {
+        const noticeType = req.params.noticeType.toLowerCase();
         let response = [];
+        if (noticeType !== 'sports' && noticeType !== 'basic' && noticeType != 'politic') {
+            res.status(400).send();
+            return;
+        }
         for (let newspaper in urls_1.urls) {
-            console.log(urls_1.urls[newspaper]['basic']);
-            if (urls_1.urls[newspaper]['basic']) {
-                response = response.concat(await (0, notice_retriever_1.noticeRetriever)(urls_1.urls[newspaper]['basic']));
+            if (urls_1.urls[newspaper][noticeType]) {
+                response = response.concat(await (0, notice_retriever_1.noticeRetriever)(urls_1.urls[newspaper][noticeType]));
             }
         }
         res.send((0, shufle_1.shuffle)(response));
@@ -80,32 +59,27 @@ app.get('/noticias', async (req, res) => {
         res.status(500).send('Error al obtener los datos de noticias.');
     }
 });
-app.get('/politica', async (req, res) => {
+app.get('/newspaper-notice/:newspaper/:noticeType', async (req, res) => {
     try {
-        const response = [];
-        for (let newspaper in urls_1.urls) {
-            if (urls_1.urls[newspaper]['politica'])
-                response.concat(await (0, notice_retriever_1.noticeRetriever)(urls_1.urls[newspaper]['politica']));
+        const newspaper = req.params.newspaper.toLowerCase();
+        if (newspaper !== 'cronica' && newspaper !== 'pagina12' && newspaper != 'telam' && newspaper != 'clarin' && newspaper != 'ole') {
+            res.status(400).send();
+            return;
         }
-        res.send((0, shufle_1.shuffle)(response));
+        const noticeType = req.params.noticeType.toLowerCase();
+        let response = [];
+        if (noticeType !== 'sports' && noticeType !== 'basic' && noticeType != 'politic') {
+            res.status(400).send();
+            return;
+        }
+        if (urls_1.urls[newspaper][noticeType]) {
+            response = response.concat(await (0, notice_retriever_1.noticeRetriever)(urls_1.urls[newspaper][noticeType]));
+        }
+        res.send(response);
     }
     catch (error) {
         console.log(error);
-        res.status(500).send('Error al obtener los datos de politica.');
-    }
-});
-app.get('/deportes', async (req, res) => {
-    try {
-        const response = [];
-        for (let newspaper in urls_1.urls) {
-            if (urls_1.urls[newspaper]['deportes'])
-                response.concat(await (0, notice_retriever_1.noticeRetriever)(urls_1.urls[newspaper]['deportes']));
-        }
-        res.send((0, shufle_1.shuffle)(response));
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).send('Error al obtener los datos de deportes.');
+        res.status(500).send('Error al obtener los datos de noticias.');
     }
 });
 app.get('/noticiasGuardadas', async (req, res) => {

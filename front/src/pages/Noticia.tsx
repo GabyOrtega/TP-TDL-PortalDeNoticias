@@ -51,6 +51,8 @@ const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, f
       return <img alt="Archivo:Télam-logo-2021.svg" src="//upload.wikimedia.org/wikipedia/commons/thumb/8/89/T%C3%A9lam-logo-2021.svg/500px-T%C3%A9lam-logo-2021.svg.png" decoding="async" width="120" height="31" srcSet="//upload.wikimedia.org/wikipedia/commons/thumb/8/89/T%C3%A9lam-logo-2021.svg/750px-T%C3%A9lam-logo-2021.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/8/89/T%C3%A9lam-logo-2021.svg/1000px-T%C3%A9lam-logo-2021.svg.png 2x" data-file-width="630" data-file-height="135"></img>
     if(page.includes('cronica'))
       return <img alt="Archivo:Crónica-logo.svg" src="//upload.wikimedia.org/wikipedia/commons/thumb/0/07/Cr%C3%B3nica-logo.svg/231px-Cr%C3%B3nica-logo.svg.png" decoding="async" width="120" height="31" srcSet="//upload.wikimedia.org/wikipedia/commons/thumb/0/07/Cr%C3%B3nica-logo.svg/347px-Cr%C3%B3nica-logo.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/0/07/Cr%C3%B3nica-logo.svg/462px-Cr%C3%B3nica-logo.svg.png 2x" data-file-width="231" data-file-height="44"></img>
+    if(page.includes('ole'))
+     return <img alt="Archivo:Olé - logo (green).svg" src="//upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Ol%C3%A9_-_logo_%28green%29.svg/106px-Ol%C3%A9_-_logo_%28green%29.svg.png" decoding="async" width="120" height="44" srcSet="//upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Ol%C3%A9_-_logo_%28green%29.svg/159px-Ol%C3%A9_-_logo_%28green%29.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Ol%C3%A9_-_logo_%28green%29.svg/212px-Ol%C3%A9_-_logo_%28green%29.svg.png 2x" data-file-width="106" data-file-height="56"></img>
   };
 
   return (
@@ -61,7 +63,7 @@ const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, f
     >
       <Styles.NoticiaContent>
         <Styles.NoticiaText>
-          {getPageImage(font)}
+        <div style={{  display: 'flex',  flexDirection: 'column',  alignItems: 'center',  justifyContent: 'center'}}>{getPageImage(font)}</div>
           <h3>{title}</h3>
           {isFocused && <div dangerouslySetInnerHTML={{ __html: description }} />}
         </Styles.NoticiaText>

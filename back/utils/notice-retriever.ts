@@ -22,7 +22,7 @@ export const noticeRetriever = async (url: string) => {
         descripcion: res!.rss.channel.item[i].description,
         imagen: res!.rss.channel.item[i].enclosure?.$.url ?? res!.rss.channel.item[i]['media:content']?.$.url ?? 'https://www.webempresa.com/foro/wp-content/uploads/wpforo/attachments/3200/318277=80538-Sin_imagen_disponible.jpg',
         link: res!.rss.channel.item[i].link,
-        id: i.toLocaleString().concat(res!.rss.channel.link),
+        id: i.toLocaleString().concat(res!.rss.channel.item[i].title),
       })
     }
     return result

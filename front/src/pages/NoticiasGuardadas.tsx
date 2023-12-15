@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Noticia from './Noticia';
 import { JSX } from 'react/jsx-runtime';
 import * as Styles from './styles';
+import NoData from './no-data';
 
 type NoticiaGuardadaResponse = {
   titulo: string;
@@ -16,7 +17,7 @@ type NoticiaGuardadaResponse = {
 };
 
 export default function NoticiasGuardadas() {
-  const [data, setData] = useState<NoticiaGuardadaResponse[] | null>(null);
+  const [data, setData] = useState<NoticiaGuardadaResponse[]>([]);
   const [borrado, setBorrado] = useState<boolean>(true);
 
   useEffect(() => {
@@ -70,6 +71,6 @@ export default function NoticiasGuardadas() {
     return items;
   };
   return (
-    <Styles.NewsContainer2>{renderNews()}</Styles.NewsContainer2>
+    data.length != 0 ? <Styles.NewsContainer2>{renderNews()}</Styles.NewsContainer2> : <NoData/>
   );
 }

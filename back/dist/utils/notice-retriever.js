@@ -27,7 +27,7 @@ const noticeRetriever = async (url) => {
             descripcion: res.rss.channel.item[i].description,
             imagen: (_e = (_c = (_b = res.rss.channel.item[i].enclosure) === null || _b === void 0 ? void 0 : _b.$.url) !== null && _c !== void 0 ? _c : (_d = res.rss.channel.item[i]['media:content']) === null || _d === void 0 ? void 0 : _d.$.url) !== null && _e !== void 0 ? _e : 'https://www.webempresa.com/foro/wp-content/uploads/wpforo/attachments/3200/318277=80538-Sin_imagen_disponible.jpg',
             link: res.rss.channel.item[i].link,
-            id: i.toLocaleString().concat(res.rss.channel.link),
+            id: i.toLocaleString().concat(res.rss.channel.item[i].title),
         });
     }
     return result;

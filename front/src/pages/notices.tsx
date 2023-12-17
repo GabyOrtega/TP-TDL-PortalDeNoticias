@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
-import Noticia from './Noticia';
+import Noticia from './notice';
 import * as Styles from './styles';
 import NoData from './no-data';
 import { ParsedNotice } from '../types/parsed-notice';

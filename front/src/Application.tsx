@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-import LoginPage from './pages/Login'
+import LoginPage from './pages/login'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { initializeApp } from "firebase/app";
 import { config } from './config/config';
 import AuthRoute from './components/AuthRoute';
-import HomePage from './pages/HomePage';
+import HomePage from './pages/home-page';
 
 initializeApp(config.firebaseConfig)
 

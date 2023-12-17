@@ -18,10 +18,10 @@ export const noticeRetriever = async (url: string) => {
     const maxResults =  res!.rss.channel.item.length > 20 ? 20 :  res!.rss.channel.item.length;
     for (let i = 0; i < maxResults; i++) {
       result.push({
-        titulo: res!.rss.channel.item[i].title,
-        fuente: res!.rss.channel?.link,
-        descripcion: res!.rss.channel.item[i].description,
-        imagen: res!.rss.channel.item[i].enclosure?.$.url ?? res!.rss.channel.item[i]['media:content']?.$.url ?? 'https://www.webempresa.com/foro/wp-content/uploads/wpforo/attachments/3200/318277=80538-Sin_imagen_disponible.jpg',
+        title: res!.rss.channel.item[i].title,
+        font: res!.rss.channel?.link,
+        description: res!.rss.channel.item[i].description,
+        image: res!.rss.channel.item[i].enclosure?.$.url ?? res!.rss.channel.item[i]['media:content']?.$.url ?? 'https://www.webempresa.com/foro/wp-content/uploads/wpforo/attachments/3200/318277=80538-Sin_imagen_disponible.jpg',
         link: res!.rss.channel.item[i].link,
         id: i.toLocaleString().concat(res!.rss.channel.item[i].title),
       })

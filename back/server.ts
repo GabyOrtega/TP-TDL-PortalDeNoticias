@@ -94,10 +94,10 @@ app.get('/noticiasGuardadas', async (req, res) => {
     resultado.forEach((noticia) => {
       return arrayNoticias.push({
         id: noticia.id,
-        titulo: noticia.data().titulo,
-        fuente: noticia.data().fuente,
-        descripcion: noticia.data().descripcion,
-        imagen: noticia.data().imagen,
+        title: noticia.data().titulo,
+        font: noticia.data().fuente,
+        description: noticia.data().descripcion,
+        image: noticia.data().imagen,
         link: noticia.data().link
       });
     });
@@ -126,7 +126,7 @@ app.post('/noticias', async (req, res) => {
   }
 });
 
-app.get('/borrarNoticiaGuardada', async (req, res) => {
+app.delete('/notice', async (req, res) => {
   try {
     const id = req.query.id;
     console.log('noticiaID', id);

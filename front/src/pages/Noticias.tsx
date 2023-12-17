@@ -32,12 +32,12 @@ const Noticias: React.FC = () => {
     if (data && valorABuscar !== '') {
       const filtered = data.filter((item) => {
               const contieneCadenaEnTitulo =
-                item.titulo &&
-                item.titulo.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(valorABuscar.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase());
+                item.title &&
+                item.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(valorABuscar.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase());
               const contieneCadenaEnDescripcion =
-                item.descripcion && item.descripcion.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(valorABuscar.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase());
+                item.description && item.description.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(valorABuscar.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase());
               const contieneCadenaEnMedio =
-                item.fuente && item.fuente.includes(valorABuscar);
+                item.font && item.font.includes(valorABuscar);
               return (
                 contieneCadenaEnTitulo ||
                 contieneCadenaEnMedio ||
@@ -79,12 +79,12 @@ const Noticias: React.FC = () => {
       items.push(
         <div key={displayData[i].id}>
           <Noticia
-            title={displayData[i].titulo}
-            description={displayData[i].descripcion}
-            imageUrl={displayData[i].imagen}
+            title={displayData[i].title}
+            description={displayData[i].description}
+            imageUrl={displayData[i].image}
             link={displayData[i].link}
-            font={displayData[i].fuente}
-            func={() => guardarNoticia(displayData[i].titulo)}
+            font={displayData[i].font}
+            func={() => saveNotice(displayData[i].title)}
             buttonName='Guardar'
             visible={true}
           />
@@ -94,16 +94,16 @@ const Noticias: React.FC = () => {
     return items;
   };
 
-  const guardarNoticia = async (indice: string) => {
+  const saveNotice = async (indice: string) => {
     try {
       const userId = await getUserId();
-      const newsData = data?.filter((d) => d.titulo === indice)[0];
+      const newsData = data?.filter((d) => d.title === indice)[0];
       if (!newsData) return;
-      await axios.post('http://localhost:3001/noticias', {
-        titulo: newsData!.titulo,
-        fuente: newsData!.fuente,
-        descripcion: newsData!.descripcion,
-        imagen: newsData!.imagen,
+      await axios.post('http://localhost:3001/notice', {
+        titulo: newsData!.title,
+        fuente: newsData!.font,
+        descripcion: newsData!.description,
+        imagen: newsData!.image,
         link: newsData!.link,
         uid: userId.toString(),
       });

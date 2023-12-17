@@ -1,8 +1,8 @@
 export type ParsedNotice = {
-    titulo: string;
-    fuente: string;
-    descripcion: string;
-    imagen: string;
+    title: string;
+    font: string;
+    description: string;
+    image: string;
     link: string;
     id: string;
 };

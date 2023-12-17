@@ -34,7 +34,7 @@ export default function NoticiasGuardadas() {
   }, [deleted]); // Empty dependency array to run the effect only once on mount
 
   function deleteSavedNotice(id: String){
-    axios.get(`http://localhost:3001/borrarNoticiaGuardada?id=${id}`);
+    axios.delete(`http://localhost:3001/notice?id=${id}`);
     setDeleted(deleted ? false : true);
 }
 
@@ -44,13 +44,13 @@ export default function NoticiasGuardadas() {
     if (data) {
       data.map((noticia, index) => (
           items.push(
-            <div key={noticia.titulo}>
+            <div key={noticia.title}>
                 <Noticia
-                  title={noticia.titulo}
-                  description={noticia.descripcion}
-                  imageUrl={noticia.imagen}
+                  title={noticia.title}
+                  description={noticia.description}
+                  imageUrl={noticia.image}
                   link={noticia.link}
-                  font={noticia.fuente}
+                  font={noticia.font}
                   func={async () => deleteSavedNotice(noticia.id)}
                   buttonName="Eliminar"
                   visible = {true}

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import * as Styles from './styles';
 
-type NoticiaProps = {
+type NoticeProps = {
   title: string;
   description: string;
   font: string;
@@ -14,7 +14,7 @@ type NoticiaProps = {
   visible: boolean;
 };
 
-const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, func, font, buttonName, visible }) => {
+const Notice: React.FC<NoticeProps> = ({ title, description, imageUrl, link, func, font, buttonName, visible }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isVisible, setVisible] = useState<boolean>(visible);
   const [showOptions, setShowOptions] = useState(false);
@@ -99,4 +99,4 @@ const Noticia: React.FC<NoticiaProps> = ({ title, description, imageUrl, link, f
   );
 };
 
-export default Noticia;
+export default Notice;

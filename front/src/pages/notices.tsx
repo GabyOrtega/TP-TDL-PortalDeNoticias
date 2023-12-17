@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
-import Noticia from './notice';
+import Notice from './notice';
 import * as Styles from './styles';
 import NoData from './no-data';
 import { ParsedNotice } from '../types/parsed-notice';
 
-const Noticias: React.FC = () => {
+const Notices: React.FC = () => {
   const [valorABuscar, setValorABuscar] = useState<string>('');
   const [data, setData] = useState<ParsedNotice[]>([]);
   const [filteredData, setFilteredData] = useState<ParsedNotice[]>([]);
@@ -78,7 +78,7 @@ const Noticias: React.FC = () => {
     for (let i = 0; i < displayData.length; i++) {
       items.push(
         <div key={displayData[i].id}>
-          <Noticia
+          <Notice
             title={displayData[i].title}
             description={displayData[i].description}
             imageUrl={displayData[i].image}
@@ -100,10 +100,10 @@ const Noticias: React.FC = () => {
       const newsData = data?.filter((d) => d.title === indice)[0];
       if (!newsData) return;
       await axios.post('http://localhost:3001/notice', {
-        titulo: newsData!.title,
-        fuente: newsData!.font,
-        descripcion: newsData!.description,
-        imagen: newsData!.image,
+        title: newsData!.title,
+        font: newsData!.font,
+        description: newsData!.description,
+        image: newsData!.image,
         link: newsData!.link,
         uid: userId.toString(),
       });
@@ -166,4 +166,4 @@ const Noticias: React.FC = () => {
     </div>;
 }
 
-export default Noticias;
+export default Notices;

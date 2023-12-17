@@ -82,39 +82,39 @@ app.get('/newspaper-notice/:newspaper/:noticeType', async (req, res) => {
         res.status(500).send('Error al obtener los datos de noticias.');
     }
 });
-app.get('/noticiasGuardadas', async (req, res) => {
+app.get('/saved-notices', async (req, res) => {
     try {
         console.log('REQ', req.query.uid);
         const uid = req.query.uid;
         console.log('userID', uid);
-        const noticias = db.collection('noticias');
-        const resultado = await noticias.where('uid', '==', uid).get();
-        const arrayNoticias = [];
-        resultado.forEach((noticia) => {
-            return arrayNoticias.push({
-                id: noticia.id,
-                title: noticia.data().titulo,
-                font: noticia.data().fuente,
-                description: noticia.data().descripcion,
-                image: noticia.data().imagen,
-                link: noticia.data().link
+        const notices = db.collection('noticias');
+        const result = await notices.where('uid', '==', uid).get();
+        const arrayNotices = [];
+        result.forEach((notice) => {
+            return arrayNotices.push({
+                id: notice.id,
+                title: notice.data().title,
+                font: notice.data().font,
+                description: notice.data().description,
+                image: notice.data().image,
+                link: notice.data().link
             });
         });
-        res.send(arrayNoticias);
+        res.send(arrayNotices);
     }
     catch (error) {
         console.log(error);
         res.status(500).send('Error al obtener las noticias.');
     }
 });
-app.post('/noticias', async (req, res) => {
+app.post('/notice', async (req, res) => {
     try {
         console.log(req.body);
         await db.collection('noticias').add({
-            titulo: req.body.titulo,
-            fuente: req.body.fuente,
-            descripcion: req.body.descripcion,
-            imagen: req.body.imagen,
+            title: req.body.title,
+            font: req.body.font,
+            description: req.body.description,
+            image: req.body.image,
             link: req.body.link,
             uid: req.body.uid
         });

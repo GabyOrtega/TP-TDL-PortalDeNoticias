@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { getAuth, signOut } from 'firebase/auth';
-import Noticias from './notices';
-import NoticiasGuardadas from './saved-notices';
+import Notices from './notices';
+import SavedNotices from './saved-notices';
 import * as Styles from './styles';
 
 export interface IHomePageProps {}
@@ -38,7 +38,7 @@ const HomePage: React.FC<IHomePageProps> = (props) => {
 
       <Styles.NewsContainer>
         <div style={{ marginBottom: '1rem', width: '100%' }}>
-          {showSavedNotices ? <NoticiasGuardadas /> : <Noticias/>}
+          {showSavedNotices ? <SavedNotices /> : <Notices/>}
         </div>
       </Styles.NewsContainer>
     </Styles.Container>

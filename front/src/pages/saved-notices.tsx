@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { onAuthStateChanged, getAuth } from 'firebase/auth';
 import { useState, useEffect } from 'react';
-import Noticia from './notice';
+import Notice from './notice';
 import { JSX } from 'react/jsx-runtime';
 import * as Styles from './styles';
 import NoData from './no-data';
 import { ParsedNotice } from '../types/parsed-notice';
 
-export default function NoticiasGuardadas() {
+export default function SavedNotices() {
   const [data, setData] = useState<ParsedNotice[]>([]);
   const [deleted, setDeleted] = useState<boolean>(true);
 
@@ -18,7 +18,7 @@ export default function NoticiasGuardadas() {
         if (user) {
           try {
             const response = await axios.get(
-              `http://localhost:3001/noticiasGuardadas?uid=${user.uid}`
+              `http://localhost:3001/saved-notices?uid=${user.uid}`
             );
             setData(response.data);
           } catch (error) {
@@ -45,7 +45,7 @@ export default function NoticiasGuardadas() {
       data.map((noticia, index) => (
           items.push(
             <div key={noticia.title}>
-                <Noticia
+                <Notice
                   title={noticia.title}
                   description={noticia.description}
                   imageUrl={noticia.image}

@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import * as Styles from './styles';
+import axios from 'axios';
+import { onAuthStateChanged, getAuth } from 'firebase/auth';
 
 type NoticeProps = {
   title: string;
@@ -26,6 +28,40 @@ const Notice: React.FC<NoticeProps> = ({ title, description, imageUrl, link, fun
 
   const handleCompartirClick = () => {
     setShowOptions(!showOptions);
+  };
+
+  const handleSaveVisit = async () => {
+    try {
+    const userId = await getUserId();
+    const timestamp: number = Date.now();
+    console.log("Campos a guardar:", { title, link, uid: userId.toString(), timestamp });
+    await axios.post('http://localhost:3001/history', {
+      title: title,
+      link: link,
+      uid: userId.toString(),
+      timestamp: timestamp
+    });
+    console.log('Link guardado correctamente');
+  } catch (error) {
+    console.error('Error al guardar noticia en el historial:', error);
+  }
+  };
+
+  const getUserId = async () => {
+    let userId = '';
+    try {
+      await onAuthStateChanged(getAuth(), (user) => {
+        if (user) {
+          console.log('userid', user.uid);
+          userId = user.uid;
+        } else {
+          console.log('Usuario no logueado');
+        }
+      });
+    } catch (error) {
+      console.error('Error obteniendo ID de usuario:', error);
+    }
+    return userId;
   };
 
   const getWhatsAppLink = () => {
@@ -69,7 +105,7 @@ const Notice: React.FC<NoticeProps> = ({ title, description, imageUrl, link, fun
         </Styles.NoticiaText>
         <Styles.NoticiaImage src={imageUrl} alt={title} />
       <Styles.StyledRow>
-        <Styles.StyledLink href={link}>Ver más</Styles.StyledLink>
+        <Styles.StyledLink href={link} target="_blank" onClick={handleSaveVisit} >Ver más</Styles.StyledLink>
         <Styles.ShareContainer>
           <Styles.ShareButton onClick={handleCompartirClick}>Compartir</Styles.ShareButton>
           {showOptions && (

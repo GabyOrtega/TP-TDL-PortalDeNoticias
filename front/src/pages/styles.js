@@ -103,6 +103,36 @@ export const NoticiaText = styled.div`
   }
 `;
 
+export const HistoryContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+`;
+
+export const HistoryContent = styled.div`
+  padding: 10px;
+  display : flex;
+`;
+
+export const HistoryText = styled.div`
+  h4 {
+    margin-bottom: 10px;
+  }
+
+  div {
+    max-height: 150px; /* Altura máxima del contenido de la descripción */
+    overflow: hidden;
+  }
+`;
+
+export const StyledRowHistory = styled.div`
+  display: flex;
+  align-items: up;
+  justify-content: space-between;
+  margin: 10px;
+`;
+
 export const NoticiaImage = styled.img`
   width: 100%;
   max-width: 600px;

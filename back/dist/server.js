@@ -107,6 +107,44 @@ app.get('/saved-notices', async (req, res) => {
         res.status(500).send('Error al obtener las noticias.');
     }
 });
+app.get('/history', async (req, res) => {
+    try {
+        console.log('REQ', req.query.uid);
+        const uid = req.query.uid;
+        console.log('userID', uid);
+        const history = db.collection('historial');
+        const resultHistory = await history.where('uid', '==', uid).orderBy("timestamp", "desc").limit(10).get();
+        const arrayHistory = [];
+        resultHistory.forEach((history) => {
+            return arrayHistory.push({
+                title: history.data().title,
+                link: history.data().link,
+                timestamp: history.data().timestamp
+            });
+        });
+        res.send(arrayHistory);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send('Error al obtener el historial.');
+    }
+});
+app.post('/history', async (req, res) => {
+    try {
+        console.log(req.body);
+        await db.collection('historial').add({
+            title: req.body.title,
+            link: req.body.link,
+            uid: req.body.uid,
+            timestamp: req.body.timestamp
+        });
+        res.status(200).send('Noticia guardada en historial correctamente.');
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send('Error al guardar la noticia en el historial.');
+    }
+});
 app.post('/notice', async (req, res) => {
     try {
         console.log(req.body);
